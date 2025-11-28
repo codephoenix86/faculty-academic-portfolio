@@ -1,8 +1,39 @@
 "use client";
 import { useState, useMemo } from "react";
+import { Inter } from "next/font/google";
+import { motion } from "framer-motion";
 
-export default function Books({ data }) {
-  const [books, setBooks] = useState(data || []);
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Animation variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 200 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 1.2,
+      ease: [0.16, 1, 0.3, 1]
+    }
+  }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+export default function Books({ data = [] }) {
+  const [books, setBooks] = useState(data);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("default");
 
@@ -39,15 +70,15 @@ export default function Books({ data }) {
   }, [books, searchQuery, sortBy]);
 
   return (
-    <div className="min-h-screen relative">
+    <div className={`min-h-screen relative ${inter.className}`}>
       {/* Header Section */}
-      <div className="mb-12">
-        <div className="flex items-end justify-between mb-6">
+      <div className="mb-8 sm:mb-12 px-4 sm:px-0">
+        <div className="flex items-end justify-between mb-4 sm:mb-6">
           <div>
-            <h1 className="text-5xl font-bold text-gray-900 mb-3 tracking-tight">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-2 sm:mb-3 tracking-tight">
               Books
             </h1>
-            <p className="text-gray-600 text-lg font-light">
+            <p className="text-gray-600 text-xs sm:text-base md:text-lg font-light">
               Published works and authored books
             </p>
           </div>
@@ -55,12 +86,12 @@ export default function Books({ data }) {
       </div>
 
       {/* Search and Sort Bar */}
-      <div className="mb-8 flex flex-col sm:flex-row gap-4">
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row gap-3 sm:gap-4 px-4 sm:px-0">
         {/* Search Bar */}
         <div className="flex-1 relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
             <svg
-              className="w-5 h-5 text-gray-500"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -78,15 +109,15 @@ export default function Books({ data }) {
             placeholder="Search by title, publisher, or ISBN..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-12 py-3.5 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all duration-300 shadow-sm hover:shadow-md"
+            className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3.5 bg-white border border-gray-200 rounded-xl text-sm sm:text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all duration-300 shadow-sm hover:shadow-md"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
             >
               <svg
-                className="w-5 h-5"
+                className="w-4 h-4 sm:w-5 sm:h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -103,10 +134,10 @@ export default function Books({ data }) {
         </div>
 
         {/* Sort Dropdown */}
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <div className="relative sm:w-auto">
+          <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
             <svg
-              className="w-5 h-5 text-emerald-700"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-700"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -122,16 +153,16 @@ export default function Books({ data }) {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="appearance-none w-full sm:w-auto pl-12 pr-12 py-3.5 bg-white border border-gray-200 rounded-xl text-gray-900 font-medium focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md"
+            className="appearance-none w-full sm:w-auto pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3.5 bg-white border border-gray-200 rounded-xl text-sm sm:text-base text-gray-900 font-medium focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md"
           >
             <option value="default">Default Order</option>
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
             <option value="title">Title (A-Z)</option>
           </select>
-          <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center pointer-events-none">
             <svg
-              className="w-5 h-5 text-emerald-700"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-700"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -149,7 +180,7 @@ export default function Books({ data }) {
 
       {/* Results Count */}
       {searchQuery && (
-        <div className="mb-6 text-gray-600 text-sm font-medium">
+        <div className="mb-4 sm:mb-6 text-gray-600 text-xs sm:text-sm font-medium px-4 sm:px-0">
           Found {filteredAndSortedBooks.length} book
           {filteredAndSortedBooks.length !== 1 ? "s" : ""}
         </div>
@@ -157,10 +188,10 @@ export default function Books({ data }) {
 
       {/* Books Grid */}
       {filteredAndSortedBooks.length === 0 ? (
-        <div className="text-center py-24">
-          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-white flex items-center justify-center border-2 border-gray-200 shadow-sm">
+        <div className="text-center py-16 sm:py-24 px-4 sm:px-0">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 rounded-full bg-white flex items-center justify-center border-2 border-gray-200 shadow-sm">
             <svg
-              className="w-12 h-12 text-gray-400"
+              className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -182,17 +213,17 @@ export default function Books({ data }) {
               )}
             </svg>
           </div>
-          <h3 className="text-2xl font-semibold text-gray-800 mb-2">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-2">
             {searchQuery ? "No matching books found" : "No books yet"}
           </h3>
-          <p className="text-gray-500 text-base">
+          <p className="text-gray-500 text-xs sm:text-sm md:text-base">
             {searchQuery
               ? "Try adjusting your search terms"
               : "Books will appear here"}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 px-4 sm:px-0">
           {filteredAndSortedBooks.map((book, index) => (
             <BookCard key={book._id} book={book} index={index} />
           ))}
@@ -206,13 +237,18 @@ function BookCard({ book, index }) {
   const { _id, year, title, publisher, isbn, link } = book;
 
   return (
-    <div>
-      <div className="group bg-white border border-gray-200 rounded-xl p-7 transition-all duration-300 hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1">
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "100px", amount: 0.3 }}
+      variants={fadeInUp}
+    >
+      <div className="group bg-white border border-gray-200 rounded-xl p-5 sm:p-7 transition-all duration-300 hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1">
         <div>
           {/* Header */}
-          <div className="flex justify-between items-start mb-5">
-            <div className="px-5 py-2.5 bg-gradient-to-br from-emerald-100 to-emerald-200 border border-emerald-300 rounded-xl shadow-sm">
-              <span className="text-emerald-800 font-bold text-lg tracking-tight">
+          <div className="flex justify-between items-start mb-4 sm:mb-5 gap-2 sm:gap-3">
+            <div className="px-2.5 py-1.5 sm:px-5 sm:py-2.5 bg-gradient-to-br from-emerald-100 to-emerald-200 border border-emerald-300 rounded-xl shadow-sm">
+              <span className="text-emerald-800 font-bold text-sm sm:text-base md:text-lg tracking-tight">
                 {year}
               </span>
             </div>
@@ -221,14 +257,14 @@ function BookCard({ book, index }) {
                 href={link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors"
+                className="flex items-center gap-1.5 sm:gap-2 text-emerald-600 hover:text-emerald-700 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
-                <span className="text-sm font-semibold tracking-wide">
+                <span className="text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap">
                   View Book
                 </span>
                 <svg
-                  className="w-5 h-5 transform group-hover:translate-x-1 transition-transform"
+                  className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -245,16 +281,16 @@ function BookCard({ book, index }) {
           </div>
 
           {/* Title */}
-          <h4 className="text-2xl font-semibold mb-4 text-gray-900 group-hover:text-emerald-700 transition-colors duration-300 leading-tight tracking-tight">
+          <h4 className="text-base sm:text-xl md:text-2xl font-semibold mb-3 sm:mb-4 text-gray-900 group-hover:text-emerald-700 transition-colors duration-300 leading-tight tracking-tight">
             {title}
           </h4>
 
           {/* Book Details */}
           <div className="space-y-2">
             {publisher && (
-              <div className="flex items-center gap-3 text-gray-700">
+              <div className="flex items-start gap-2 sm:gap-3 text-gray-700">
                 <svg
-                  className="w-5 h-5 text-emerald-600 flex-shrink-0"
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -266,14 +302,14 @@ function BookCard({ book, index }) {
                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                   />
                 </svg>
-                <span className="text-base font-medium">{publisher}</span>
+                <span className="text-sm sm:text-base font-medium">{publisher}</span>
               </div>
             )}
 
             {isbn && (
-              <div className="flex items-center gap-3 text-gray-700">
+              <div className="flex items-start gap-2 sm:gap-3 text-gray-700">
                 <svg
-                  className="w-5 h-5 text-emerald-600 flex-shrink-0"
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 flex-shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -285,12 +321,12 @@ function BookCard({ book, index }) {
                     d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
                   />
                 </svg>
-                <span className="text-base font-mono">{isbn}</span>
+                <span className="text-sm sm:text-base font-mono">{isbn}</span>
               </div>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

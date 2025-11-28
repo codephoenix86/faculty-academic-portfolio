@@ -8,6 +8,15 @@ export const client = createClient({
   useCdn: true,
 });
 
+// Write client for server-side operations
+export const writeClient = createClient({
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  apiVersion: "2024-01-01",
+  useCdn: false,
+  token: process.env.SANITY_API_TOKEN,
+});
+
 const builder = imageUrlBuilder(client);
 
 export function urlFor(source) {
@@ -23,6 +32,7 @@ export async function getProfile() {
     citations,
     hIndex,
     i10Index,
+    visitorCount,
     "profileImage": {
       "asset": {
         "_ref": profileImage.asset._ref,
@@ -78,6 +88,33 @@ export async function getProfile() {
   }`;
 
   return await client.fetch(query);
+}
+
+// Function to increment visitor count
+export async function incrementVisitorCount(profileId) {
+  try {
+    const profile = await writeClient.fetch(
+      `*[_type == "profile" && _id == $profileId][0]{ _id, visitorCount }`,
+      { profileId }
+    );
+
+    if (!profile) {
+      console.error('Profile not found');
+      return null;
+    }
+
+    const newCount = (profile.visitorCount || 0) + 1;
+
+    await writeClient
+      .patch(profile._id)
+      .set({ visitorCount: newCount })
+      .commit();
+
+    return newCount;
+  } catch (error) {
+    console.error('Error incrementing visitor count:', error);
+    return null;
+  }
 }
 
 export async function getPublications() {

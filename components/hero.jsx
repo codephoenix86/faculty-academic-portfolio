@@ -1,6 +1,7 @@
 "use client";
 
 export default function Hero({ profile }) {
+
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 px-4 py-12">
       <style>{`
@@ -37,6 +38,17 @@ export default function Hero({ profile }) {
           }
         }
 
+        @keyframes countUp {
+          from {
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
         .animate-slide-left {
           animation: slideInFromLeft 1.2s ease-out forwards;
         }
@@ -49,6 +61,15 @@ export default function Hero({ profile }) {
           animation: fadeInUp 0.8s ease-out forwards;
           opacity: 0;
           transform: translateY(40px);
+        }
+
+        .animate-count-up {
+          animation: countUp 0.6s ease-out forwards;
+        }
+
+        .visitor-badge {
+          transition: all 0.3s ease;
+          will-change: transform, box-shadow;
         }
 
         .delay-100 { animation-delay: 0.1s; }
@@ -87,6 +108,47 @@ export default function Hero({ profile }) {
                 ))}
               </div>
             </div>
+
+            {/* Visitor Count Badge */}
+            <div className="visitor-badge mt-8 inline-flex items-center gap-4 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-6 py-4 rounded-2xl border-2 border-indigo-200 shadow-lg animate-fade-up delay-500">
+              <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-md">
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-1">
+                  Total Visitors
+                </p>
+                <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 animate-count-up">
+                  {profile.visitorCount?.toLocaleString() || '0'}
+                </p>
+              </div>
+            </div>
+            
+            <style jsx>{`
+              .visitor-badge:hover {
+                transform: scale(1.05);
+                box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+              }
+            `}</style>
           </div>
 
           {/* Right Image */}

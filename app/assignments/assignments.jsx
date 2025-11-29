@@ -54,19 +54,6 @@ export default function Assignments({ data }) {
     return filtered;
   }, [assignments, searchQuery, sortBy, filterSemester]);
 
-  // Calculate stats for current semester
-  const stats = useMemo(() => {
-    const semesterAssignments = assignments.filter(
-      (a) => a.semester === filterSemester
-    );
-    const total = semesterAssignments.length;
-    const upcoming = semesterAssignments.filter(
-      (a) => new Date(a.dueDate) > new Date()
-    ).length;
-    const past = total - upcoming;
-    return { total, upcoming, past };
-  }, [assignments, filterSemester]);
-
   return (
     <div className="min-h-screen">
       <style jsx global>{`
@@ -95,79 +82,6 @@ export default function Assignments({ data }) {
         <p className="text-base sm:text-lg text-slate-600 mb-6 sm:mb-8">
           Track and manage course assignments
         </p>
-
-        {/* Stats Bar */}
-        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6 p-4 sm:p-6 bg-white border-2 border-slate-200 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
-              <svg
-                className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-            </div>
-            <div>
-              <p className="text-2xl sm:text-3xl font-bold text-slate-900">{stats.total}</p>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium">
-                Total Assignments
-              </p>
-            </div>
-          </div>
-          <div className="w-full sm:w-px h-px sm:h-auto bg-slate-200" />
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
-              <svg
-                className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <div>
-              <p className="text-2xl sm:text-3xl font-bold text-slate-900">
-                {stats.upcoming}
-              </p>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium">Upcoming</p>
-            </div>
-          </div>
-          <div className="w-full sm:w-px h-px sm:h-auto bg-slate-200" />
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
-              <svg
-                className="w-6 h-6 sm:w-7 sm:h-7 text-slate-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <div>
-              <p className="text-2xl sm:text-3xl font-bold text-slate-900">{stats.past}</p>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium">Past Due</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Search, Semester, and Sort Filter */}

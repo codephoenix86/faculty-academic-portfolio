@@ -1,6 +1,33 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 export default function Hero({ profile }) {
+  const [isImpactVisible, setIsImpactVisible] = useState(false);
+  const impactRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsImpactVisible(true);
+        }
+      },
+      {
+        threshold: 0.2,
+      }
+    );
+
+    if (impactRef.current) {
+      observer.observe(impactRef.current);
+    }
+
+    return () => {
+      if (impactRef.current) {
+        observer.unobserve(impactRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 px-4 py-12">
@@ -72,6 +99,15 @@ export default function Hero({ profile }) {
           will-change: transform, box-shadow;
         }
 
+        .impact-card {
+          opacity: 0;
+          transform: translateY(60px);
+        }
+
+        .impact-card.visible {
+          animation: fadeInUp 1s ease-out forwards;
+        }
+
         .delay-100 { animation-delay: 0.1s; }
         .delay-200 { animation-delay: 0.2s; }
         .delay-300 { animation-delay: 0.3s; }
@@ -83,13 +119,25 @@ export default function Hero({ profile }) {
         {/* Main Profile Section */}
         <div className="flex flex-col md:flex-row gap-12 items-center mb-16">
           {/* Left Content */}
-          <div className="flex-1 animate-slide-left">
+          <div className="flex-1 animate-slide-left w-full">
+            {/* Name and Role */}
             <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-2 text-balance">
               {profile.name}
             </h1>
             <p className="text-xl text-orange-600 font-semibold mb-6">
               {profile.role}
             </p>
+
+            {/* Profile Image - Mobile Only */}
+            <div className="md:hidden mb-8 animate-fade-up">
+              <div className="relative w-full max-w-xs mx-auto rounded-full shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
+                <img
+                  src={profile.profileImage.asset.url || "/placeholder.svg"}
+                  alt={profile.name}
+                  className="w-full transition-transform duration-300 hover:scale-105 object-cover aspect-square"
+                />
+              </div>
+            </div>
 
             {/* Research Interests */}
             <div>
@@ -151,28 +199,30 @@ export default function Hero({ profile }) {
             `}</style>
           </div>
 
-          {/* Right Image */}
-          <div className="flex-1 animate-slide-right">
-            <div className="relative w-full max-w-sm mx-auto">
+          {/* Right Image - Desktop Only */}
+          <div className="hidden md:flex flex-1 animate-slide-right">
+            <div className="relative w-full max-w-sm mx-auto rounded-full shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
               <img
                 src={profile.profileImage.asset.url || "/placeholder.svg"}
                 alt={profile.name}
-                className="w-full rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 object-cover aspect-square"
+                className="w-full transition-transform duration-300 hover:scale-105 object-cover aspect-square"
               />
             </div>
           </div>
         </div>
 
         {/* Research Impact Section */}
-        <div className="mt-20">
+        <div className="mt-32 md:mt-40" ref={impactRef}>
           <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">
             Research Impact
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Citations Card */}
             <div
-              className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 animate-fade-up border border-slate-200"
-              style={{ animationDelay: "0s" }}
+              className={`impact-card bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200 ${
+                isImpactVisible ? "visible" : ""
+              }`}
+              style={{ animationDelay: "0.2s" }}
             >
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
@@ -204,8 +254,10 @@ export default function Hero({ profile }) {
 
             {/* H-Index Card */}
             <div
-              className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 animate-fade-up border border-slate-200"
-              style={{ animationDelay: "0.1s" }}
+              className={`impact-card bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200 ${
+                isImpactVisible ? "visible" : ""
+              }`}
+              style={{ animationDelay: "0.4s" }}
             >
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mr-4">
@@ -231,8 +283,10 @@ export default function Hero({ profile }) {
 
             {/* i10-Index Card */}
             <div
-              className="bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 animate-fade-up border border-slate-200"
-              style={{ animationDelay: "0.2s" }}
+              className={`impact-card bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200 ${
+                isImpactVisible ? "visible" : ""
+              }`}
+              style={{ animationDelay: "0.6s" }}
             >
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mr-4">

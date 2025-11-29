@@ -1,5 +1,19 @@
 "use client";
 import { useState, useMemo } from "react";
+import { motion } from "framer-motion";
+
+// Animation variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 200 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 1.2,
+      ease: [0.16, 1, 0.3, 1]
+    }
+  }
+};
 
 export default function Assignments({ data }) {
   const [assignments] = useState(data || []);
@@ -74,20 +88,20 @@ export default function Assignments({ data }) {
       `}</style>
 
       {/* Header Section */}
-      <div className="mb-10">
-        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3 tracking-tight">
+      <div className="mb-6 sm:mb-10">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2 sm:mb-3 tracking-tight">
           Assignments
         </h1>
-        <p className="text-lg text-slate-600 mb-8">
+        <p className="text-base sm:text-lg text-slate-600 mb-6 sm:mb-8">
           Track and manage course assignments
         </p>
 
         {/* Stats Bar */}
-        <div className="flex flex-wrap gap-6 p-6 bg-white border-2 border-slate-200 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl bg-indigo-100 flex items-center justify-center">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6 p-4 sm:p-6 bg-white border-2 border-slate-200 rounded-2xl shadow-sm">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
               <svg
-                className="w-7 h-7 text-indigo-600"
+                className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -101,17 +115,17 @@ export default function Assignments({ data }) {
               </svg>
             </div>
             <div>
-              <p className="text-3xl font-bold text-slate-900">{stats.total}</p>
-              <p className="text-sm text-slate-600 font-medium">
+              <p className="text-2xl sm:text-3xl font-bold text-slate-900">{stats.total}</p>
+              <p className="text-xs sm:text-sm text-slate-600 font-medium">
                 Total Assignments
               </p>
             </div>
           </div>
-          <div className="w-px bg-slate-200 hidden sm:block" />
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center">
+          <div className="w-full sm:w-px h-px sm:h-auto bg-slate-200" />
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
               <svg
-                className="w-7 h-7 text-blue-600"
+                className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -125,17 +139,17 @@ export default function Assignments({ data }) {
               </svg>
             </div>
             <div>
-              <p className="text-3xl font-bold text-slate-900">
+              <p className="text-2xl sm:text-3xl font-bold text-slate-900">
                 {stats.upcoming}
               </p>
-              <p className="text-sm text-slate-600 font-medium">Upcoming</p>
+              <p className="text-xs sm:text-sm text-slate-600 font-medium">Upcoming</p>
             </div>
           </div>
-          <div className="w-px bg-slate-200 hidden sm:block" />
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl bg-slate-100 flex items-center justify-center">
+          <div className="w-full sm:w-px h-px sm:h-auto bg-slate-200" />
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
               <svg
-                className="w-7 h-7 text-slate-600"
+                className="w-6 h-6 sm:w-7 sm:h-7 text-slate-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -149,20 +163,20 @@ export default function Assignments({ data }) {
               </svg>
             </div>
             <div>
-              <p className="text-3xl font-bold text-slate-900">{stats.past}</p>
-              <p className="text-sm text-slate-600 font-medium">Past Due</p>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-900">{stats.past}</p>
+              <p className="text-xs sm:text-sm text-slate-600 font-medium">Past Due</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Search, Semester, and Sort Filter */}
-      <div className="mb-8 flex flex-col md:flex-row gap-4">
+      <div className="mb-6 sm:mb-8 flex flex-col md:flex-row gap-3 sm:gap-4">
         {/* Search Bar */}
         <div className="flex-1 relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
             <svg
-              className="w-5 h-5 text-slate-400"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -177,18 +191,18 @@ export default function Assignments({ data }) {
           </div>
           <input
             type="text"
-            placeholder="Search by title, course, or description..."
+            placeholder="Search assignments..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm"
+            className="w-full pl-10 sm:pl-12 pr-10 sm:pr-4 py-3 sm:py-3.5 bg-white border-2 border-slate-200 rounded-xl text-sm sm:text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+              className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
             >
               <svg
-                className="w-5 h-5"
+                className="w-4 h-4 sm:w-5 sm:h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -204,68 +218,71 @@ export default function Assignments({ data }) {
           )}
         </div>
 
-        {/* Semester Dropdown */}
-        <div className="relative md:w-56">
-          <select
-            value={filterSemester}
-            onChange={(e) => setFilterSemester(e.target.value)}
-            className="w-full appearance-none pl-4 pr-10 py-3.5 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all cursor-pointer shadow-sm"
-          >
-            {allSemesters.map((sem) => (
-              <option key={sem} value={sem}>
-                Semester {sem}
-              </option>
-            ))}
-          </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <svg
-              className="w-5 h-5 text-slate-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        {/* Semester and Sort Dropdowns - side by side on mobile, same row as search on desktop */}
+        <div className="flex gap-3 sm:gap-4 md:contents">
+          {/* Semester Dropdown */}
+          <div className="relative flex-1 md:w-56 md:flex-none">
+            <select
+              value={filterSemester}
+              onChange={(e) => setFilterSemester(e.target.value)}
+              className="w-full appearance-none pl-3 sm:pl-4 pr-8 sm:pr-10 py-3 sm:py-3.5 bg-white border-2 border-slate-200 rounded-xl text-sm sm:text-base text-slate-900 font-medium focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all cursor-pointer shadow-sm"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+              {allSemesters.map((sem) => (
+                <option key={sem} value={sem}>
+                  Sem {sem}
+                </option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-3 pointer-events-none">
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
 
-        {/* Sort Dropdown */}
-        <div className="relative md:w-56">
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="w-full appearance-none pl-4 pr-10 py-3.5 bg-white border-2 border-slate-200 rounded-xl text-slate-900 font-medium focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all cursor-pointer shadow-sm"
-          >
-            <option value="default">Default Order</option>
-            <option value="dueDate">Due Date (Soonest)</option>
-            <option value="recent">Recently Added</option>
-          </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <svg
-              className="w-5 h-5 text-slate-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {/* Sort Dropdown */}
+          <div className="relative flex-1 md:w-56 md:flex-none">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-full appearance-none pl-3 sm:pl-4 pr-8 sm:pr-10 py-3 sm:py-3.5 bg-white border-2 border-slate-200 rounded-xl text-sm sm:text-base text-slate-900 font-medium focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all cursor-pointer shadow-sm"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+              <option value="default">Default</option>
+              <option value="dueDate">Due Date</option>
+              <option value="recent">Recent</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-3 pointer-events-none">
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Results Count */}
       {searchQuery && (
-        <div className="mb-5 text-slate-600 text-sm font-medium">
+        <div className="mb-4 sm:mb-5 text-slate-600 text-xs sm:text-sm font-medium">
           Found {filteredAndSortedAssignments.length} assignment
           {filteredAndSortedAssignments.length !== 1 ? "s" : ""} in Semester{" "}
           {filterSemester}
@@ -274,10 +291,10 @@ export default function Assignments({ data }) {
 
       {/* Assignments Grid */}
       {filteredAndSortedAssignments.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
-          <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-slate-100 flex items-center justify-center">
+        <div className="text-center py-12 sm:py-20 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-5 rounded-full bg-slate-100 flex items-center justify-center">
             <svg
-              className="w-10 h-10 text-slate-400"
+              className="w-8 h-8 sm:w-10 sm:h-10 text-slate-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -299,21 +316,21 @@ export default function Assignments({ data }) {
               )}
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-slate-800 mb-2">
+          <h3 className="text-lg sm:text-xl font-semibold text-slate-800 mb-2 px-4">
             {searchQuery
               ? "No matching assignments found"
               : "No assignments yet"}
           </h3>
-          <p className="text-slate-500">
+          <p className="text-sm sm:text-base text-slate-500 px-4">
             {searchQuery
               ? "Try adjusting your search terms or selecting a different semester"
               : `Assignments for Semester ${filterSemester} will appear here`}
           </p>
         </div>
       ) : (
-        <div className="space-y-5">
-          {filteredAndSortedAssignments.map((assignment) => (
-            <AssignmentCard key={assignment._id} assignment={assignment} />
+        <div className="space-y-4 sm:space-y-5">
+          {filteredAndSortedAssignments.map((assignment, index) => (
+            <AssignmentCard key={assignment._id} assignment={assignment} index={index} />
           ))}
         </div>
       )}
@@ -321,7 +338,7 @@ export default function Assignments({ data }) {
   );
 }
 
-function AssignmentCard({ assignment }) {
+function AssignmentCard({ assignment, index }) {
   const {
     _id,
     title,
@@ -377,113 +394,120 @@ function AssignmentCard({ assignment }) {
   }
 
   return (
-    <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:shadow-xl hover:border-indigo-300 transition-all duration-300 hover:-translate-y-0.5">
-      {/* Header: Course Badge + Dates */}
-      <div className="flex items-start justify-between gap-4 mb-4">
-        {/* Course Badge */}
-        {course && (
-          <span className="px-4 py-1.5 bg-indigo-100 text-indigo-700 text-sm font-semibold rounded-lg border border-indigo-200">
-            {course}
-          </span>
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "100px", amount: 0.3 }}
+      variants={fadeInUp}
+    >
+      <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 sm:p-6 hover:shadow-xl hover:border-indigo-300 transition-all duration-300 hover:-translate-y-0.5">
+        {/* Header: Course Badge + Dates */}
+        <div className="flex items-start justify-between gap-3 sm:gap-4 mb-4">
+          {/* Course Badge */}
+          {course && (
+            <span className="inline-block px-1.5 sm:px-3 md:px-4 py-0.5 sm:py-1 md:py-1.5 bg-indigo-100 text-indigo-700 text-[9px] sm:text-xs md:text-sm font-semibold rounded-md sm:rounded-lg border border-indigo-200 w-fit">
+              {course}
+            </span>
+          )}
+
+          {/* Dates - top right on all screens */}
+          <div className="flex flex-col items-end gap-1 text-[9px] sm:text-[10px] md:text-sm flex-shrink-0">
+            <div className="flex items-center gap-1">
+              <svg
+                className={`w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 flex-shrink-0 ${
+                  isOverdue
+                    ? "text-red-600"
+                    : isDueSoon
+                    ? "text-amber-600"
+                    : "text-slate-500"
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              <span
+                className={`font-semibold text-right leading-tight ${
+                  isOverdue
+                    ? "text-red-600"
+                    : isDueSoon
+                    ? "text-amber-600"
+                    : "text-slate-700"
+                }`}
+              >
+                Due {formatDate(dueDate)}
+                {isOverdue && " • Overdue"}
+                {isDueSoon && !isOverdue && ` • ${daysUntilDue}d left`}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 text-slate-500 font-medium">
+              <svg
+                className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span className="text-right leading-tight">Posted {formatDate(createdAt)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Title */}
+        <h4 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4 text-slate-900 leading-tight hover:text-indigo-600 transition-colors">
+          {title}
+        </h4>
+
+        {/* Description */}
+        {description && (
+          <p className="text-slate-600 text-sm sm:text-base mb-4 leading-relaxed whitespace-pre-wrap">
+            {description}
+          </p>
         )}
 
-        {/* Dates - stacked on the right */}
-        <div className="flex flex-col items-end gap-2 text-sm">
-          <div className="flex items-center gap-2">
-            <svg
-              className={`w-4 h-4 ${
-                isOverdue
-                  ? "text-red-600"
-                  : isDueSoon
-                  ? "text-amber-600"
-                  : "text-slate-500"
-              }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        {/* Attachments Section */}
+        {allFiles.length > 0 && <AttachmentsSection attachments={allFiles} />}
+
+        {/* Submit Button */}
+        {submissionLink && (
+          <div className="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t-2 border-slate-100">
+            <a
+              href={submissionLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-            <span
-              className={`font-semibold ${
-                isOverdue
-                  ? "text-red-600"
-                  : isDueSoon
-                  ? "text-amber-600"
-                  : "text-slate-700"
-              }`}
-            >
-              Due {formatDate(dueDate)}
-              {isOverdue && " • Overdue"}
-              {isDueSoon && !isOverdue && ` • ${daysUntilDue}d left`}
-            </span>
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Submit Assignment
+            </a>
           </div>
-          <div className="flex items-center gap-2 text-slate-500 font-medium">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <span>Posted {formatDate(createdAt)}</span>
-          </div>
-        </div>
+        )}
       </div>
-
-      {/* Title */}
-      <h4 className="text-xl font-bold mb-3 text-slate-900 leading-tight hover:text-indigo-600 transition-colors">
-        {title}
-      </h4>
-
-      {/* Description */}
-      {description && (
-        <p className="text-slate-600 text-base mb-4 leading-relaxed whitespace-pre-wrap">
-          {description}
-        </p>
-      )}
-
-      {/* Attachments Section */}
-      {allFiles.length > 0 && <AttachmentsSection attachments={allFiles} />}
-
-      {/* Submit Button */}
-      {submissionLink && (
-        <div className="mt-5 pt-5 border-t-2 border-slate-100">
-          <a
-            href={submissionLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-3 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            Submit Assignment
-          </a>
-        </div>
-      )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -496,18 +520,18 @@ function AttachmentsSection({ attachments }) {
     : attachments.slice(0, INITIAL_DISPLAY_COUNT);
 
   return (
-    <div className="space-y-3 pt-5 border-t-2 border-slate-100">
+    <div className="space-y-3 pt-4 sm:pt-5 border-t-2 border-slate-100">
       {hasMore && (
         <div className="flex justify-end mb-2">
           <button
             onClick={() => setShowAll(!showAll)}
-            className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors flex items-center gap-1"
+            className="text-xs sm:text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors flex items-center gap-1"
           >
             {showAll ? (
               <>
                 Show less
                 <svg
-                  className="w-4 h-4"
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -524,7 +548,7 @@ function AttachmentsSection({ attachments }) {
               <>
                 Show all
                 <svg
-                  className="w-4 h-4"
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -542,7 +566,7 @@ function AttachmentsSection({ attachments }) {
         </div>
       )}
       <div
-        className={`grid gap-3 ${
+        className={`grid gap-2 sm:gap-3 ${
           showAll ? "max-h-64 overflow-y-auto pr-2 custom-scrollbar" : ""
         }`}
         style={
@@ -564,11 +588,11 @@ function AttachmentsSection({ attachments }) {
               href={fileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-indigo-50 border-2 border-slate-200 hover:border-indigo-300 rounded-xl transition-all duration-200 group/attachment"
+              className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-slate-50 hover:bg-indigo-50 border-2 border-slate-200 hover:border-indigo-300 rounded-xl transition-all duration-200 group/attachment min-w-0"
             >
-              <div className="flex-shrink-0 w-11 h-11 bg-indigo-100 group-hover/attachment:bg-indigo-200 rounded-lg flex items-center justify-center transition-colors">
+              <div className="flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 bg-indigo-100 group-hover/attachment:bg-indigo-200 rounded-lg flex items-center justify-center transition-colors">
                 <svg
-                  className="w-6 h-6 text-indigo-600"
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -581,13 +605,16 @@ function AttachmentsSection({ attachments }) {
                   />
                 </svg>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-slate-900 truncate group-hover/attachment:text-indigo-700 transition-colors">
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <div 
+                  className="text-xs sm:text-sm font-semibold text-slate-900 truncate group-hover/attachment:text-indigo-700 transition-colors"
+                  title={fileName}
+                >
                   {fileName}
                 </div>
               </div>
               <svg
-                className="w-5 h-5 text-slate-400 group-hover/attachment:text-indigo-600 flex-shrink-0 transition-colors"
+                className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 group-hover/attachment:text-indigo-600 flex-shrink-0 transition-colors"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

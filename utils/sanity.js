@@ -5,7 +5,7 @@ export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
   apiVersion: "2024-01-01",
-  useCdn: true,
+  useCdn: false, // Changed to false for fresh data
 });
 
 // Write client for server-side operations
@@ -87,7 +87,7 @@ export async function getProfile() {
     }
   }`;
 
-  return await client.fetch(query);
+  return await client.fetch(query, {}, { cache: "no-store" });
 }
 
 // Function to increment visitor count
@@ -99,7 +99,7 @@ export async function incrementVisitorCount(profileId) {
     );
 
     if (!profile) {
-      console.error('Profile not found');
+      console.error("Profile not found");
       return null;
     }
 
@@ -112,7 +112,7 @@ export async function incrementVisitorCount(profileId) {
 
     return newCount;
   } catch (error) {
-    console.error('Error incrementing visitor count:', error);
+    console.error("Error incrementing visitor count:", error);
     return null;
   }
 }
@@ -128,7 +128,7 @@ export async function getPublications() {
     link
   }`;
 
-  return await client.fetch(query);
+  return await client.fetch(query, {}, { cache: "no-store" });
 }
 
 export async function getConferences() {
@@ -142,7 +142,7 @@ export async function getConferences() {
     link
   }`;
 
-  return await client.fetch(query);
+  return await client.fetch(query, {}, { cache: "no-store" });
 }
 
 export async function getBooks() {
@@ -155,7 +155,7 @@ export async function getBooks() {
     link
   }`;
 
-  return await client.fetch(query);
+  return await client.fetch(query, {}, { cache: "no-store" });
 }
 
 export async function getAssignments() {
@@ -179,7 +179,7 @@ export async function getAssignments() {
     semester
   }`;
 
-  return await client.fetch(query);
+  return await client.fetch(query, {}, { cache: "no-store" });
 }
 
 export async function getResources() {
@@ -205,7 +205,7 @@ export async function getResources() {
     createdAt
   }`;
 
-  return await client.fetch(query);
+  return await client.fetch(query, {}, { cache: "no-store" });
 }
 
 export async function getAnnouncements() {
@@ -230,7 +230,7 @@ export async function getAnnouncements() {
     createdAt
   }`;
 
-  return await client.fetch(query);
+  return await client.fetch(query, {}, { cache: "no-store" });
 }
 
 export async function getPhdStudents() {
@@ -258,5 +258,5 @@ export async function getPhdStudents() {
     achievements
   }`;
 
-  return await client.fetch(query);
+  return await client.fetch(query, {}, { cache: "no-store" });
 }

@@ -20,7 +20,7 @@ export async function POST(request) {
     let data;
     try {
       data = await resend.emails.send({
-        from: 'Contact Form <onboarding@resend.dev>', // Update with your verified domain
+        from: 'Contact Form <contact@profjksamriya.in>', // Update with your verified domain
         to: [recipientEmail],
         subject: `New message from ${firstName} ${lastName}`,
         html: `

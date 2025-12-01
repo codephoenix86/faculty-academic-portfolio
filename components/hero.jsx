@@ -9,12 +9,13 @@ export default function Hero({ profile }) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && entry.intersectionRatio > 0) {
           setIsImpactVisible(true);
         }
       },
-      {
-        threshold: 0.2,
+      { 
+        threshold: [0, 0.1],
+        rootMargin: '0px'
       }
     );
 
@@ -30,7 +31,7 @@ export default function Hero({ profile }) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-slate-50 px-4 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-slate-50 px-4 py-12 md:py-16">
       <style>{`
         @keyframes slideInFromLeft {
           from {
@@ -74,19 +75,32 @@ export default function Hero({ profile }) {
           }
         }
 
-        @keyframes slideInFromRightSmooth {
-          from {
-            opacity: 0;
-            transform: translateX(300px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
         .animate-slide-left {
           animation: slideInFromLeft 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        .animate-slide-left-1 {
+          animation: slideInFromLeft 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          animation-delay: 0s;
+          opacity: 0;
+        }
+
+        .animate-slide-left-2 {
+          animation: slideInFromLeft 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          animation-delay: 0.12s;
+          opacity: 0;
+        }
+
+        .animate-slide-left-3 {
+          animation: slideInFromLeft 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          animation-delay: 0.24s;
+          opacity: 0;
+        }
+
+        .animate-slide-left-4 {
+          animation: slideInFromLeft 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          animation-delay: 0.36s;
+          opacity: 0;
         }
 
         .animate-slide-right {
@@ -104,62 +118,65 @@ export default function Hero({ profile }) {
           opacity: 0;
         }
 
-        .animate-slide-right-smooth {
-          animation: slideInFromRightSmooth 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-          opacity: 0;
-        }
-
         .impact-card {
           opacity: 0;
-          transform: translateY(60px);
+          transform: translateY(40px);
+          transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
 
         .impact-card.visible {
-          animation: fadeInUp 0.5s ease-out forwards;
+          opacity: 1;
+          transform: translateY(0);
         }
 
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-300 { animation-delay: 0.3s; }
-        .delay-400 { animation-delay: 0.4s; }
-        .delay-500 { animation-delay: 0.5s; }
+        .impact-card:nth-child(1).visible {
+          transition-delay: 0.1s;
+        }
+        
+        .impact-card:nth-child(2).visible {
+          transition-delay: 0.2s;
+        }
+        
+        .impact-card:nth-child(3).visible {
+          transition-delay: 0.3s;
+        }
       `}</style>
 
       <div className="max-w-6xl mx-auto">
-        {/* Institute Header */}
-        <div className="flex flex-col items-center mb-12 animate-fade-in">
-          <div className="flex flex-col md:flex-row items-center gap-4 mb-3">
-            <img
-              src="/logo.png"
-              alt="IIIT Logo"
-              className="h-24 w-24 md:h-28 md:w-28 object-contain"
-            />
-            <div className="text-center">
-              <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 uppercase animate-slide-right-smooth">
-                Indian Institute of Information Technology Sonepat
-              </h2>
-              <p className="text-base md:text-lg text-slate-600 mt-1 animate-slide-right-smooth delay-100">
-                An Institute of National Importance
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Main Profile Section */}
         <div className="flex flex-col md:flex-row gap-12 items-center mb-16">
           {/* Left Content */}
-          <div className="flex-1 animate-slide-left w-full">
+          <div className="flex-1 w-full">
             {/* Name and Role */}
-            <h1 className="text-2xl md:text-5xl font-bold text-slate-900 mb-2 text-balance">
-              {profile.name}
-            </h1>
-            <p className="text-base md:text-xl text-orange-600 font-semibold mb-4 md:mb-6">
-              {profile.role}
-            </p>
+            <div className="animate-slide-left-1">
+              <h1 className="text-3xl md:text-5xl font-bold text-slate-900 mb-2 text-balance">
+                {profile.name}
+              </h1>
+              <p className="text-base md:text-xl text-orange-600 font-semibold mb-6 md:mb-8">
+                {profile.role}
+              </p>
+            </div>
+
+            {/* Institute Section */}
+            <div className="flex flex-row items-center gap-2 mb-6 md:mb-8 animate-slide-left-2">
+              <img
+                src="/logo.png"
+                alt="IIIT Logo"
+                className="h-12 w-12 md:h-20 md:w-20 object-contain flex-shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xs sm:text-sm md:text-lg font-semibold text-slate-900 uppercase leading-tight">
+                  Indian Institute of Information Technology Sonepat
+                </h2>
+                <p className="text-xs sm:text-sm md:text-base text-slate-600 mt-0.5">
+                  An Institute of National Importance
+                </p>
+              </div>
+            </div>
 
             {/* Profile Image - Mobile Only */}
-            <div className="md:hidden mb-6">
-              <div className="relative w-48 h-48 mx-auto rounded-full shadow-lg hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] transition-shadow duration-300 overflow-hidden">
+            <div className="md:hidden mb-6 animate-slide-left-3">
+              <div className="relative w-56 h-56 mx-auto rounded-full shadow-lg hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] transition-shadow duration-300 overflow-hidden">
                 <img
                   src={profile.profileImage.asset.url || "/placeholder.svg"}
                   alt={profile.name}
@@ -169,7 +186,7 @@ export default function Hero({ profile }) {
             </div>
 
             {/* Research Interests */}
-            <div>
+            <div className="animate-slide-left-4">
               <h3 className="text-base md:text-lg font-semibold text-slate-900 mb-3 md:mb-4">
                 Research Interests
               </h3>
@@ -202,7 +219,7 @@ export default function Hero({ profile }) {
 
           {/* Right Image - Desktop Only */}
           <div className="hidden md:flex flex-1 animate-slide-right">
-            <div className="relative w-full max-w-xs mx-auto rounded-full shadow-lg hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] transition-shadow duration-300 overflow-hidden">
+            <div className="relative w-full max-w-sm mx-auto rounded-full shadow-lg hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] transition-shadow duration-300 overflow-hidden">
               <img
                 src={profile.profileImage.asset.url || "/placeholder.svg"}
                 alt={profile.name}
@@ -213,18 +230,16 @@ export default function Hero({ profile }) {
         </div>
 
         {/* Research Impact Section */}
-        <div className="mt-20 md:mt-28" ref={impactRef}>
+        <div 
+          ref={impactRef}
+          className="mt-32 md:mt-40"
+        >
           <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">
             Research Impact
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Citations Card */}
-            <div
-              className={`impact-card bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200 ${
-                isImpactVisible ? "visible" : ""
-              }`}
-              style={{ animationDelay: "0.2s" }}
-            >
+            <div className={`impact-card bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200 ${isImpactVisible ? 'visible' : ''}`}>
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
                   <svg
@@ -254,12 +269,7 @@ export default function Hero({ profile }) {
             </div>
 
             {/* H-Index Card */}
-            <div
-              className={`impact-card bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200 ${
-                isImpactVisible ? "visible" : ""
-              }`}
-              style={{ animationDelay: "0.4s" }}
-            >
+            <div className={`impact-card bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200 ${isImpactVisible ? 'visible' : ''}`}>
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mr-4">
                   <svg
@@ -283,12 +293,7 @@ export default function Hero({ profile }) {
             </div>
 
             {/* i10-Index Card */}
-            <div
-              className={`impact-card bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200 ${
-                isImpactVisible ? "visible" : ""
-              }`}
-              style={{ animationDelay: "0.6s" }}
-            >
+            <div className={`impact-card bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200 ${isImpactVisible ? 'visible' : ''}`}>
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mr-4">
                   <svg

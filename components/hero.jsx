@@ -30,12 +30,12 @@ export default function Hero({ profile }) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-slate-50 px-4 py-6">
       <style>{`
         @keyframes slideInFromLeft {
           from {
             opacity: 0;
-            transform: translateX(-80px);
+            transform: translateX(-300px);
           }
           to {
             opacity: 1;
@@ -46,7 +46,7 @@ export default function Hero({ profile }) {
         @keyframes slideInFromRight {
           from {
             opacity: 0;
-            transform: translateX(80px);
+            transform: translateX(300px);
           }
           to {
             opacity: 1;
@@ -65,23 +65,32 @@ export default function Hero({ profile }) {
           }
         }
 
-        @keyframes countUp {
+        @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: scale(0.8);
           }
           to {
             opacity: 1;
-            transform: scale(1);
+          }
+        }
+
+        @keyframes slideInFromRightSmooth {
+          from {
+            opacity: 0;
+            transform: translateX(300px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
           }
         }
 
         .animate-slide-left {
-          animation: slideInFromLeft 1.2s ease-out forwards;
+          animation: slideInFromLeft 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
         .animate-slide-right {
-          animation: slideInFromRight 1.2s ease-out forwards;
+          animation: slideInFromRight 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
         .animate-fade-up {
@@ -90,13 +99,14 @@ export default function Hero({ profile }) {
           transform: translateY(40px);
         }
 
-        .animate-count-up {
-          animation: countUp 0.6s ease-out forwards;
+        .animate-fade-in {
+          animation: fadeIn 1s ease-out forwards;
+          opacity: 0;
         }
 
-        .visitor-badge {
-          transition: all 0.3s ease;
-          will-change: transform, box-shadow;
+        .animate-slide-right-smooth {
+          animation: slideInFromRightSmooth 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          opacity: 0;
         }
 
         .impact-card {
@@ -105,7 +115,7 @@ export default function Hero({ profile }) {
         }
 
         .impact-card.visible {
-          animation: fadeInUp 1s ease-out forwards;
+          animation: fadeInUp 0.5s ease-out forwards;
         }
 
         .delay-100 { animation-delay: 0.1s; }
@@ -116,92 +126,83 @@ export default function Hero({ profile }) {
       `}</style>
 
       <div className="max-w-6xl mx-auto">
+        {/* Institute Header */}
+        <div className="flex flex-col items-center mb-12 animate-fade-in">
+          <div className="flex flex-col md:flex-row items-center gap-4 mb-3">
+            <img
+              src="/logo.png"
+              alt="IIIT Logo"
+              className="h-24 w-24 md:h-28 md:w-28 object-contain"
+            />
+            <div className="text-center">
+              <h2 className="text-2xl md:text-3xl font-semibold text-slate-900 uppercase animate-slide-right-smooth">
+                Indian Institute of Information Technology Sonepat
+              </h2>
+              <p className="text-base md:text-lg text-slate-600 mt-1 animate-slide-right-smooth delay-100">
+                An Institute of National Importance
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Main Profile Section */}
         <div className="flex flex-col md:flex-row gap-12 items-center mb-16">
           {/* Left Content */}
           <div className="flex-1 animate-slide-left w-full">
             {/* Name and Role */}
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-2 text-balance">
+            <h1 className="text-2xl md:text-5xl font-bold text-slate-900 mb-2 text-balance">
               {profile.name}
             </h1>
-            <p className="text-xl text-orange-600 font-semibold mb-6">
+            <p className="text-base md:text-xl text-orange-600 font-semibold mb-4 md:mb-6">
               {profile.role}
             </p>
 
             {/* Profile Image - Mobile Only */}
-            <div className="md:hidden mb-8 animate-fade-up">
-              <div className="relative w-full max-w-xs mx-auto rounded-full shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
+            <div className="md:hidden mb-6">
+              <div className="relative w-48 h-48 mx-auto rounded-full shadow-lg hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] transition-shadow duration-300 overflow-hidden">
                 <img
                   src={profile.profileImage.asset.url || "/placeholder.svg"}
                   alt={profile.name}
-                  className="w-full transition-transform duration-300 hover:scale-105 object-cover aspect-square"
+                  className="w-full h-full transition-transform duration-300 hover:scale-105 object-cover"
                 />
               </div>
             </div>
 
             {/* Research Interests */}
             <div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">
+              <h3 className="text-base md:text-lg font-semibold text-slate-900 mb-3 md:mb-4">
                 Research Interests
               </h3>
-              <div className="flex flex-wrap gap-3">
-                {profile.contact.researchInterests.map((interest, idx) => (
-                  <span
-                    key={idx}
-                    className="px-4 py-2 bg-orange-100 text-orange-700 rounded-full text-sm font-medium hover:bg-orange-200 transition-colors duration-300 animate-fade-up"
-                    style={{ animationDelay: `${idx * 0.1}s` }}
-                  >
-                    {interest}
-                  </span>
-                ))}
+              <div className="flex flex-wrap gap-2 md:gap-3">
+                {profile.contact.researchInterests.map((interest, idx) => {
+                  const colors = [
+                    'bg-orange-100 text-orange-700 hover:bg-orange-200',
+                    'bg-blue-100 text-blue-700 hover:bg-blue-200',
+                    'bg-green-100 text-green-700 hover:bg-green-200',
+                    'bg-purple-100 text-purple-700 hover:bg-purple-200',
+                    'bg-pink-100 text-pink-700 hover:bg-pink-200',
+                    'bg-indigo-100 text-indigo-700 hover:bg-indigo-200',
+                    'bg-teal-100 text-teal-700 hover:bg-teal-200',
+                    'bg-cyan-100 text-cyan-700 hover:bg-cyan-200',
+                  ];
+                  const colorClass = colors[idx % colors.length];
+                  
+                  return (
+                    <span
+                      key={idx}
+                      className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors duration-300 ${colorClass}`}
+                    >
+                      {interest}
+                    </span>
+                  );
+                })}
               </div>
             </div>
-
-            {/* Visitor Count Badge */}
-            <div className="visitor-badge mt-8 inline-flex items-center gap-4 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 px-6 py-4 rounded-2xl border-2 border-indigo-200 shadow-lg animate-fade-up delay-500">
-              <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-md">
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  />
-                </svg>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-1">
-                  Total Visitors
-                </p>
-                <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 animate-count-up">
-                  {profile.visitorCount?.toLocaleString() || '0'}
-                </p>
-              </div>
-            </div>
-            
-            <style jsx>{`
-              .visitor-badge:hover {
-                transform: scale(1.05);
-                box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-              }
-            `}</style>
           </div>
 
           {/* Right Image - Desktop Only */}
           <div className="hidden md:flex flex-1 animate-slide-right">
-            <div className="relative w-full max-w-sm mx-auto rounded-full shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
+            <div className="relative w-full max-w-xs mx-auto rounded-full shadow-lg hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] transition-shadow duration-300 overflow-hidden">
               <img
                 src={profile.profileImage.asset.url || "/placeholder.svg"}
                 alt={profile.name}
@@ -212,7 +213,7 @@ export default function Hero({ profile }) {
         </div>
 
         {/* Research Impact Section */}
-        <div className="mt-32 md:mt-40" ref={impactRef}>
+        <div className="mt-20 md:mt-28" ref={impactRef}>
           <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">
             Research Impact
           </h2>

@@ -38,7 +38,7 @@ export default function Contact({ profile }) {
   };
 
   const contactInfo = profile?.contact || {};
-  const phone = contactInfo.phone || "";
+  const phones = contactInfo.phones || [];
   const emails = contactInfo.emails || [];
 
   const handleSubmit = async (e) => {
@@ -431,8 +431,8 @@ export default function Contact({ profile }) {
               </div>
 
               <div className="space-y-4 sm:space-y-6">
-                {/* Phone */}
-                {phone && (
+                {/* Phones */}
+                {phones.length > 0 && (
                   <div className="group/item">
                     <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl hover:bg-gray-50 transition-all duration-300">
                       <div className="shrink-0 w-9 h-9 sm:w-11 sm:h-11 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg sm:rounded-xl flex items-center justify-center group-hover/item:scale-110 transition-transform duration-300">
@@ -451,13 +451,20 @@ export default function Contact({ profile }) {
                         </svg>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs sm:text-sm font-semibold text-gray-600 mb-1">Phone</p>
-                        <a
-                          href={`tel:${phone}`}
-                          className="text-sm sm:text-base font-medium text-gray-900 hover:text-blue-600 transition-colors duration-300 break-all"
-                        >
-                          {phone}
-                        </a>
+                        <p className="text-xs sm:text-sm font-semibold text-gray-600 mb-2">
+                          Phone{phones.length > 1 ? "s" : ""}
+                        </p>
+                        <div className="space-y-1.5">
+                          {phones.map((phone, index) => (
+                            <a
+                              key={index}
+                              href={`tel:${phone}`}
+                              className="block text-sm sm:text-base font-medium text-gray-900 hover:text-blue-600 transition-colors duration-300 break-all"
+                            >
+                              {phone}
+                            </a>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>

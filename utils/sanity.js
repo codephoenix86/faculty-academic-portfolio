@@ -33,14 +33,16 @@ export async function getProfile() {
     hIndex,
     i10Index,
     visitorCount,
+
     "profileImage": {
       "asset": {
         "_ref": profileImage.asset._ref,
         "url": profileImage.asset->url
       }
     },
+
     contact{
-      phone,
+      phones,
       emails,
       address{
         department,
@@ -49,6 +51,7 @@ export async function getProfile() {
       },
       researchInterests
     },
+
     links{
       googleScholar,
       researchGate,
@@ -56,34 +59,23 @@ export async function getProfile() {
       linkedin,
       facebook
     },
+
     education[]{
       degree,
       institution,
-      year,
-      description
+      year
     },
+
     experience[]{
       position,
       institution,
-      duration,
-      description
+      duration
     },
+
     awards[]{
       title,
       organization,
-      year,
-      description
-    },
-    professionalService[]{
-      role,
-      organization,
       year
-    },
-    quickStats{
-      yearsTeaching,
-      publications,
-      projectsGuided,
-      coursesTaught
     }
   }`;
 

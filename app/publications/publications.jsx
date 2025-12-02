@@ -1,12 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
-import { Inter } from "next/font/google";
 import { motion } from "framer-motion";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-});
 
 // Animation variants
 const fadeInUp = {
@@ -21,32 +15,18 @@ const fadeInUp = {
   }
 };
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-};
-
 export default function Publications({ data = [] }) {
-  const [publications, setPublications] = useState(data);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("default");
 
   // Filter and sort publications
   const filteredAndSortedPublications = useMemo(() => {
-    let filtered = publications.filter((pub) => {
+    let filtered = data.filter((pub) => {
       const searchLower = searchQuery.toLowerCase();
-      const titleMatch = pub.title.toLowerCase().includes(searchLower);
-      const tagsMatch =
-        pub.tags?.some((tag) => tag.toLowerCase().includes(searchLower)) ||
-        false;
-      const journalMatch = pub.journal?.toLowerCase().includes(searchLower);
-      return titleMatch || tagsMatch || journalMatch;
+      const titleMatch = pub.title?.toLowerCase().includes(searchLower) || false;
+      const journalMatch = pub.journal?.toLowerCase().includes(searchLower) || false;
+      const authorsMatch = pub.authors?.toLowerCase().includes(searchLower) || false;
+      return titleMatch || journalMatch || authorsMatch;
     });
 
     // Sort publications
@@ -65,10 +45,10 @@ export default function Publications({ data = [] }) {
     }
 
     return filtered;
-  }, [publications, searchQuery, sortBy]);
+  }, [data, searchQuery, sortBy]);
 
   return (
-    <div className={`min-h-screen relative ${inter.className}`}>
+    <div className="min-h-screen relative">
       {/* Header Section */}
       <div className="mb-8 sm:mb-12 px-4 sm:px-0">
         <div className="flex items-end justify-between mb-4 sm:mb-6">
@@ -104,7 +84,7 @@ export default function Publications({ data = [] }) {
           </div>
           <input
             type="text"
-            placeholder="Search by title, journal, or tags..."
+            placeholder="Search by title, journal, or authors..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3.5 bg-white border border-gray-200 rounded-xl text-sm sm:text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-300 shadow-sm hover:shadow-md"
@@ -232,8 +212,8 @@ export default function Publications({ data = [] }) {
   );
 }
 
-function PublicationCard({ publication, index }) {
-  const { _id, year, title, journal, citations, tags = [], link } = publication;
+function PublicationCard({ publication }) {
+  const { year, title, journal, authors, link } = publication;
 
   return (
     <motion.div
@@ -246,37 +226,39 @@ function PublicationCard({ publication, index }) {
         <div>
           {/* Header */}
           <div className="flex justify-between items-start mb-4 sm:mb-5 gap-2 sm:gap-3">
-            <div className="px-2.5 py-1.5 sm:px-5 sm:py-2.5 bg-gradient-to-br from-blue-100 to-blue-200 border border-blue-300 rounded-xl shadow-sm">
+            {year && (
               <span className="text-blue-800 font-bold text-sm sm:text-base md:text-lg tracking-tight">
                 {year}
               </span>
-            </div>
-            {link && (
-              <a
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 sm:gap-2 text-blue-600 hover:text-blue-700 transition-colors"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <span className="text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap">
-                  View Paper
-                </span>
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-              </a>
             )}
+            <div className={year ? "" : "ml-auto"}>
+              {link && (
+                <a
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 sm:gap-2 text-blue-600 hover:text-blue-700 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap">
+                    View Paper
+                  </span>
+                  <svg
+                    className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </a>
+              )}
+            </div>
           </div>
 
           {/* Title */}
@@ -286,6 +268,26 @@ function PublicationCard({ publication, index }) {
 
           {/* Publication Details */}
           <div className="space-y-2 mb-4 sm:mb-5">
+            {authors && (
+              <div className="flex items-start gap-2 sm:gap-3 text-gray-700">
+                <svg
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+                <span className="text-sm sm:text-base font-medium">
+                  {authors}
+                </span>
+              </div>
+            )}
             {journal && (
               <div className="flex items-start gap-2 sm:gap-3 text-gray-700">
                 <svg
@@ -306,41 +308,7 @@ function PublicationCard({ publication, index }) {
                 </span>
               </div>
             )}
-            {citations !== undefined && citations !== null && (
-              <div className="flex items-center gap-2 sm:gap-3 text-gray-700">
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                <span className="text-sm sm:text-base font-medium">
-                  {citations} citation{citations !== 1 ? "s" : ""}
-                </span>
-              </div>
-            )}
           </div>
-
-          {/* Tags */}
-          {tags && tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {tags.map((tag, tagIndex) => (
-                <span
-                  key={`${tag}-${tagIndex}`}
-                  className="px-3 py-1 sm:px-4 sm:py-1.5 bg-gray-50 border border-gray-200 rounded-full text-xs sm:text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all duration-200 shadow-sm"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </motion.div>

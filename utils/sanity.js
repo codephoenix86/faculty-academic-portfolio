@@ -121,10 +121,9 @@ export async function getPublications() {
   const query = `*[_type == "publication"] | order(year desc) {
     _id,
     title,
+    authors,
     year,
     journal,
-    citations,
-    tags,
     link
   }`;
 
@@ -137,8 +136,8 @@ export async function getConferences() {
     title,
     year,
     name,
-    vanue,
-    tags,
+    conferenceName,
+    venue,
     link
   }`;
 
@@ -149,6 +148,7 @@ export async function getBooks() {
   const query = `*[_type == "book"] | order(year desc) {
     _id,
     title,
+    authors,
     publisher,
     year,
     isbn,

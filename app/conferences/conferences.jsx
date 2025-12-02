@@ -1,12 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
-import { Inter } from "next/font/google";
 import { motion } from "framer-motion";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-});
 
 // Animation variants
 const fadeInUp = {
@@ -21,33 +15,19 @@ const fadeInUp = {
   }
 };
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-};
-
 export default function Conferences({ data = [] }) {
-  const [conferences, setConferences] = useState(data);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("default");
 
   // Filter and sort conferences
   const filteredAndSortedConferences = useMemo(() => {
-    let filtered = conferences.filter((conf) => {
+    let filtered = data.filter((conf) => {
       const searchLower = searchQuery.toLowerCase();
-      const titleMatch = conf.title.toLowerCase().includes(searchLower);
-      const nameMatch = conf.name?.toLowerCase().includes(searchLower);
-      const tagsMatch =
-        conf.tags?.some((tag) => tag.toLowerCase().includes(searchLower)) ||
-        false;
-      const venueMatch = conf.vanue?.toLowerCase().includes(searchLower);
-      return titleMatch || nameMatch || tagsMatch || venueMatch;
+      const titleMatch = conf.title?.toLowerCase().includes(searchLower) || false;
+      const nameMatch = conf.name?.toLowerCase().includes(searchLower) || false;
+      const conferenceNameMatch = conf.conferenceName?.toLowerCase().includes(searchLower) || false;
+      const venueMatch = conf.venue?.toLowerCase().includes(searchLower) || false;
+      return titleMatch || nameMatch || conferenceNameMatch || venueMatch;
     });
 
     // Sort conferences
@@ -66,10 +46,10 @@ export default function Conferences({ data = [] }) {
     }
 
     return filtered;
-  }, [conferences, searchQuery, sortBy]);
+  }, [data, searchQuery, sortBy]);
 
   return (
-    <div className={`min-h-screen relative ${inter.className}`}>
+    <div className="min-h-screen relative">
       {/* Header Section */}
       <div className="mb-8 sm:mb-12 px-4 sm:px-0">
         <div className="flex items-end justify-between mb-4 sm:mb-6">
@@ -105,7 +85,7 @@ export default function Conferences({ data = [] }) {
           </div>
           <input
             type="text"
-            placeholder="Search by title, name, venue, or tags..."
+            placeholder="Search by title, name, or venue..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3.5 bg-white border border-gray-200 rounded-xl text-sm sm:text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all duration-300 shadow-sm hover:shadow-md"
@@ -233,8 +213,8 @@ export default function Conferences({ data = [] }) {
   );
 }
 
-function ConferenceCard({ conference, index }) {
-  const { _id, year, title, name, vanue, tags = [], link } = conference;
+function ConferenceCard({ conference }) {
+  const { year, title, name, conferenceName, venue, link } = conference;
 
   return (
     <motion.div
@@ -247,37 +227,39 @@ function ConferenceCard({ conference, index }) {
         <div>
           {/* Header */}
           <div className="flex justify-between items-start mb-4 sm:mb-5 gap-2 sm:gap-3">
-            <div className="px-2.5 py-1.5 sm:px-5 sm:py-2.5 bg-gradient-to-br from-purple-100 to-purple-200 border border-purple-300 rounded-xl shadow-sm">
+            {year && (
               <span className="text-purple-800 font-bold text-sm sm:text-base md:text-lg tracking-tight">
                 {year}
               </span>
-            </div>
-            {link && (
-              <a
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 sm:gap-2 text-purple-600 hover:text-purple-700 transition-colors"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <span className="text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap">
-                  View Details
-                </span>
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-              </a>
             )}
+            <div className={year ? "" : "ml-auto"}>
+              {link && (
+                <a
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 sm:gap-2 text-purple-600 hover:text-purple-700 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap">
+                    View Details
+                  </span>
+                  <svg
+                    className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </a>
+              )}
+            </div>
           </div>
 
           {/* Title */}
@@ -287,7 +269,7 @@ function ConferenceCard({ conference, index }) {
 
           {/* Conference Details */}
           <div className="space-y-2 mb-4 sm:mb-5">
-            {name && (
+            {(name || conferenceName) && (
               <div className="flex items-start gap-2 sm:gap-3 text-gray-700">
                 <svg
                   className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0 mt-0.5"
@@ -299,15 +281,15 @@ function ConferenceCard({ conference, index }) {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
                   />
                 </svg>
                 <span className="text-sm sm:text-base font-medium">
-                  {name}
+                  {name || conferenceName}
                 </span>
               </div>
             )}
-            {vanue && (
+            {venue && (
               <div className="flex items-start gap-2 sm:gap-3 text-gray-700">
                 <svg
                   className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0 mt-0.5"
@@ -329,25 +311,11 @@ function ConferenceCard({ conference, index }) {
                   />
                 </svg>
                 <span className="text-sm sm:text-base font-medium">
-                  {vanue}
+                  {venue}
                 </span>
               </div>
             )}
           </div>
-
-          {/* Tags */}
-          {tags && tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {tags.map((tag, tagIndex) => (
-                <span
-                  key={`${tag}-${tagIndex}`}
-                  className="px-3 py-1 sm:px-4 sm:py-1.5 bg-gray-50 border border-gray-200 rounded-full text-xs sm:text-sm font-medium text-gray-700 hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700 transition-all duration-200 shadow-sm"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </motion.div>

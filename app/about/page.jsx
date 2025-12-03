@@ -6,6 +6,3 @@ export default async function AboutPage() {
   
   return <AboutPageClient profileData={profileData} />;
 }
-
-// Enable ISR (Incremental Static Regeneration) - revalidate every 60 seconds
-export const revalidate = 60;

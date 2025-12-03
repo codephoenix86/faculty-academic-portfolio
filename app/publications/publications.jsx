@@ -2,22 +2,22 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 
-// Animation variants
-const fadeInUp = {
-  hidden: { opacity: 0, y: 200 },
+// Scroll animation with subtle slide
+const fadeInScroll = {
+  hidden: { opacity: 0, y: 30 },
   visible: { 
-    opacity: 1, 
+    opacity: 1,
     y: 0,
     transition: {
-      duration: 1.2,
-      ease: [0.16, 1, 0.3, 1]
+      duration: 0.8,
+      ease: [0.25, 0.1, 0.25, 1]
     }
   }
 };
 
 export default function Publications({ data = [] }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("default");
+  const [sortBy, setSortBy] = useState("newest");
 
   // Filter and sort publications
   const filteredAndSortedPublications = useMemo(() => {
@@ -50,17 +50,13 @@ export default function Publications({ data = [] }) {
   return (
     <div className="min-h-screen relative">
       {/* Header Section */}
-      <div className="mb-8 sm:mb-12 px-4 sm:px-0">
-        <div className="flex items-end justify-between mb-4 sm:mb-6">
-          <div>
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-2 sm:mb-3 tracking-tight">
-              Publications
-            </h1>
-            <p className="text-gray-600 text-xs sm:text-base md:text-lg font-light">
-              Research papers and academic contributions
-            </p>
-          </div>
-        </div>
+      <div className="mb-8 sm:mb-10 px-4 sm:px-0">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-2 tracking-tight">
+          Journal Publications
+        </h1>
+        <p className="text-gray-600 text-sm sm:text-base md:text-lg">
+          Peer-reviewed research papers and academic contributions
+        </p>
       </div>
 
       {/* Search and Sort Bar */}
@@ -69,7 +65,7 @@ export default function Publications({ data = [] }) {
         <div className="flex-1 relative">
           <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
             <svg
-              className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -87,7 +83,7 @@ export default function Publications({ data = [] }) {
             placeholder="Search by title, journal, or authors..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3.5 bg-white border border-gray-200 rounded-xl text-sm sm:text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-300 shadow-sm hover:shadow-md"
+            className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3 bg-white border border-gray-300 rounded-lg text-sm sm:text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
           />
           {searchQuery && (
             <button
@@ -112,34 +108,18 @@ export default function Publications({ data = [] }) {
         </div>
 
         {/* Sort Dropdown */}
-        <div className="relative sm:w-auto">
-          <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-            <svg
-              className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"
-              />
-            </svg>
-          </div>
+        <div className="relative sm:w-48">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="appearance-none w-full sm:w-auto pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3.5 bg-white border border-gray-200 rounded-xl text-sm sm:text-base text-gray-900 font-medium focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md"
+            className="appearance-none w-full pl-4 pr-10 py-2.5 sm:py-3 bg-white border border-gray-300 rounded-lg text-sm sm:text-base text-gray-700 font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all cursor-pointer"
           >
-            <option value="default">Default Order</option>
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
           </select>
-          <div className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
             <svg
-              className="w-4 h-4 sm:w-5 sm:h-5 text-blue-700"
+              className="w-5 h-5 text-gray-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -157,18 +137,17 @@ export default function Publications({ data = [] }) {
 
       {/* Results Count */}
       {searchQuery && (
-        <div className="mb-4 sm:mb-6 text-gray-600 text-xs sm:text-sm font-medium px-4 sm:px-0">
-          Found {filteredAndSortedPublications.length} publication
-          {filteredAndSortedPublications.length !== 1 ? "s" : ""}
+        <div className="mb-4 sm:mb-5 text-gray-600 text-sm font-medium px-4 sm:px-0">
+          {filteredAndSortedPublications.length} {filteredAndSortedPublications.length === 1 ? 'result' : 'results'} found
         </div>
       )}
 
-      {/* Publications Grid */}
+      {/* Publications List */}
       {filteredAndSortedPublications.length === 0 ? (
-        <div className="text-center py-16 sm:py-24 px-4 sm:px-0">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 rounded-full bg-white flex items-center justify-center border-2 border-gray-200 shadow-sm">
+        <div className="text-center py-16 sm:py-20 px-4 sm:px-0">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
             <svg
-              className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400"
+              className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -190,21 +169,24 @@ export default function Publications({ data = [] }) {
               )}
             </svg>
           </div>
-          <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-2">
-            {searchQuery
-              ? "No matching publications found"
-              : "No publications yet"}
+          <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
+            {searchQuery ? "No results found" : "No publications"}
           </h3>
-          <p className="text-gray-500 text-xs sm:text-sm md:text-base">
+          <p className="text-gray-500 text-sm sm:text-base">
             {searchQuery
-              ? "Try adjusting your search terms"
+              ? "Try different search terms"
               : "Publications will appear here"}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:gap-6 px-4 sm:px-0">
+        <div className="space-y-6 sm:space-y-8 px-4 sm:px-0">
           {filteredAndSortedPublications.map((pub, index) => (
-            <PublicationCard key={pub._id} publication={pub} index={index} />
+            <PublicationItem 
+              key={`${pub._id}-${searchQuery}-${sortBy}`}
+              publication={pub} 
+              index={index}
+              useScrollAnimation={index >= 3}
+            />
           ))}
         </div>
       )}
@@ -212,39 +194,156 @@ export default function Publications({ data = [] }) {
   );
 }
 
-function PublicationCard({ publication }) {
+function PublicationItem({ publication, index, useScrollAnimation = false }) {
   const { year, title, journal, authors, link } = publication;
 
   return (
-    <motion.div
+    <motion.article
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "100px", amount: 0.3 }}
-      variants={fadeInUp}
+      whileInView={useScrollAnimation ? "visible" : undefined}
+      viewport={useScrollAnimation ? { once: true, margin: "-60px", amount: 0.15 } : undefined}
+      variants={useScrollAnimation ? fadeInScroll : undefined}
+      animate={useScrollAnimation ? undefined : "visible"}
+      className="group relative"
     >
-      <div className="group bg-white border border-gray-200 rounded-xl p-5 sm:p-7 transition-all duration-300 hover:shadow-xl hover:border-blue-300 hover:-translate-y-1">
-        <div>
-          {/* Header */}
-          <div className="flex justify-between items-start mb-4 sm:mb-5 gap-2 sm:gap-3">
-            {year && (
-              <span className="text-blue-800 font-bold text-sm sm:text-base md:text-lg tracking-tight">
-                {year}
-              </span>
+      {/* Mobile Layout */}
+      <div className="block sm:hidden pb-5 border-b border-gray-200">
+        {/* Year Badge - Top */}
+        <div className="mb-3">
+          {year ? (
+            <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-bold text-sm shadow-sm group-hover:bg-blue-200 group-hover:shadow-md transition-all duration-300">
+              {year}
+            </span>
+          ) : (
+            <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-gray-100 text-gray-600 font-bold text-xs shadow-sm">
+              Year N/A
+            </span>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="space-y-2">
+          {/* Authors */}
+          {authors && (
+            <p className="text-sm text-gray-700 font-medium">
+              {authors}
+            </p>
+          )}
+
+          {/* Title */}
+          <h3 className="text-base font-semibold text-gray-900 leading-snug">
+            {link ? (
+              <a
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-blue-700 transition-colors active:text-blue-800"
+              >
+                {title}
+              </a>
+            ) : (
+              title
             )}
-            <div className={year ? "" : "ml-auto"}>
-              {link && (
+          </h3>
+
+          {/* Journal */}
+          {journal && (
+            <div className="space-y-1 text-sm text-gray-600">
+              <p className="font-medium italic">{journal}</p>
+            </div>
+          )}
+
+          {/* Link Button */}
+          {link && (
+            <div className="pt-2">
+              <a
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 active:text-blue-800 transition-colors"
+              >
+                <span>View Paper</span>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Desktop/Tablet Layout - Hidden on mobile */}
+      <div className="hidden sm:flex gap-4 sm:gap-6">
+        {year ? (
+          <div className="flex-shrink-0">
+            <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-blue-100 text-blue-700 font-bold text-base sm:text-lg shadow-sm group-hover:bg-blue-200 group-hover:shadow-md transition-all duration-300">
+              {year}
+            </div>
+          </div>
+        ) : (
+          <div className="flex-shrink-0">
+            <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 text-gray-600 font-bold text-xs sm:text-sm shadow-sm">
+              N/A
+            </div>
+          </div>
+        )}
+
+        {/* Main Content */}
+        <div className="flex-1 min-w-0 pb-6 border-b border-gray-200 group-hover:border-blue-300 transition-colors">
+          {/* Citation-style layout */}
+          <div className="space-y-2 sm:space-y-2.5">
+            {/* Authors */}
+            {authors && (
+              <p className="text-sm sm:text-base text-gray-700 font-medium">
+                {authors}
+              </p>
+            )}
+
+            {/* Title - Most prominent */}
+            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 leading-tight group-hover:text-blue-700 transition-colors">
+              {link ? (
                 <a
                   href={link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 sm:gap-2 text-blue-600 hover:text-blue-700 transition-colors"
-                  onClick={(e) => e.stopPropagation()}
+                  className="hover:underline decoration-2 underline-offset-2"
                 >
-                  <span className="text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap">
-                    View Paper
-                  </span>
+                  {title}
+                </a>
+              ) : (
+                title
+              )}
+            </h3>
+
+            {/* Journal Info */}
+            {journal && (
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm sm:text-base text-gray-600">
+                <span className="font-medium italic">{journal}</span>
+              </div>
+            )}
+
+            {/* Link Button */}
+            {link && (
+              <div className="pt-2">
+                <a
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-200 group/btn"
+                >
+                  <span>View Paper</span>
                   <svg
-                    className="w-4 h-4 sm:w-5 sm:h-5 transform group-hover:translate-x-1 transition-transform flex-shrink-0"
+                    className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-0.5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -257,60 +356,11 @@ function PublicationCard({ publication }) {
                     />
                   </svg>
                 </a>
-              )}
-            </div>
-          </div>
-
-          {/* Title */}
-          <h4 className="text-base sm:text-xl md:text-2xl font-semibold mb-3 sm:mb-4 text-gray-900 group-hover:text-blue-700 transition-colors duration-300 leading-tight tracking-tight">
-            {title}
-          </h4>
-
-          {/* Publication Details */}
-          <div className="space-y-2 mb-4 sm:mb-5">
-            {authors && (
-              <div className="flex items-start gap-2 sm:gap-3 text-gray-700">
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-                <span className="text-sm sm:text-base font-medium">
-                  {authors}
-                </span>
-              </div>
-            )}
-            {journal && (
-              <div className="flex items-start gap-2 sm:gap-3 text-gray-700">
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-                  />
-                </svg>
-                <span className="text-sm sm:text-base font-medium">
-                  {journal}
-                </span>
               </div>
             )}
           </div>
         </div>
       </div>
-    </motion.div>
+    </motion.article>
   );
 }

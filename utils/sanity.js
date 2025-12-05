@@ -1,5 +1,5 @@
 import { createClient } from "@sanity/client";
-import imageUrlBuilder from "@sanity/image-url";
+import { createImageUrlBuilder } from "@sanity/image-url"; // use named export
 
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -17,11 +17,14 @@ export const writeClient = createClient({
   token: process.env.SANITY_API_TOKEN,
 });
 
-const builder = imageUrlBuilder(client);
+// Updated builder using named export
+const builder = createImageUrlBuilder(client);
 
 export function urlFor(source) {
   return builder.image(source);
 }
+
+// ---------------------- Fetching functions ----------------------
 
 export async function getProfile() {
   const query = `*[_type == "profile"][0]{
@@ -60,19 +63,19 @@ export async function getProfile() {
       facebook
     },
 
-    education[]{
+    education[] {
       degree,
       institution,
       year
     },
 
-    experience[]{
+    experience[] {
       position,
       institution,
       duration
     },
 
-    awards[]{
+    awards[] {
       title,
       organization,
       year
@@ -82,7 +85,6 @@ export async function getProfile() {
   return await client.fetch(query, {}, { cache: "no-store" });
 }
 
-// Function to increment visitor count
 export async function incrementVisitorCount(profileId) {
   try {
     const profile = await writeClient.fetch(
@@ -90,24 +92,19 @@ export async function incrementVisitorCount(profileId) {
       { profileId }
     );
 
-    if (!profile) {
-      console.error("Profile not found");
-      return null;
-    }
+    if (!profile) return null;
 
     const newCount = (profile.visitorCount || 0) + 1;
 
-    await writeClient
-      .patch(profile._id)
-      .set({ visitorCount: newCount })
-      .commit();
-
+    await writeClient.patch(profile._id).set({ visitorCount: newCount }).commit();
     return newCount;
   } catch (error) {
     console.error("Error incrementing visitor count:", error);
     return null;
   }
 }
+
+// ---------------------- Other collections ----------------------
 
 export async function getPublications() {
   const query = `*[_type == "publication"] | order(year desc) {
@@ -157,7 +154,7 @@ export async function getAssignments() {
     description,
     createdAt,
     dueDate,
-    attachments[]{
+    attachments[] {
       name,
       "file": file.asset->{
         _id,
@@ -177,21 +174,18 @@ export async function getAssignments() {
 export async function getResources() {
   const query = `*[_type == "resource"] | order(createdAt desc) {
     _id,
-    title,
-    description,
+    label,
     subject,
     semester,
-    attachments[]{
+    attachments[] {
       name,
-      "file": select(
-        defined(file.asset) => file.asset->{
-          _id,
-          url,
-          originalFilename,
-          extension,
-          size
-        }
-      ),
+      "file": file.asset->{
+        _id,
+        url,
+        originalFilename,
+        extension,
+        size
+      },
       fileUrl
     },
     createdAt
@@ -203,9 +197,8 @@ export async function getResources() {
 export async function getAnnouncements() {
   const query = `*[_type == "announcement"] | order(createdAt desc) {
     _id,
-    title,
-    description,
-    attachments[]{
+    label,
+    attachments[] {
       name,
       "file": select(
         defined(file.asset) => file.asset->{

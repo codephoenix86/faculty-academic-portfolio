@@ -1,271 +1,427 @@
 "use client";
-import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect, useMemo } from "react";
+
+// Add global styles for scrollbar
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
+  style.textContent = `
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .custom-scrollbar::-webkit-scrollbar-button {
+      display: none;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .pulse-animation {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+  `;
+  if (!document.head.querySelector("#custom-scrollbar-styles")) {
+    style.id = "custom-scrollbar-styles";
+    document.head.appendChild(style);
+  }
+}
 
 // Animation variants
-const fadeInUp = {
-  hidden: { opacity: 0, y: 200 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
     transition: {
-      duration: 1.2,
-      ease: [0.16, 1, 0.3, 1]
-    }
-  }
+      duration: 0.4,
+      ease: "easeOut",
+    },
+  },
 };
 
-export default function Assignments({ data }) {
-  const [assignments] = useState(data || []);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("default");
-  const [filterSemester, setFilterSemester] = useState("1");
+// Get human-readable file type description
+function getFileTypeDescription(extension, isUrl) {
+  if (isUrl) return "External link";
 
-  // All semesters (1-8)
-  const allSemesters = ["1", "2", "3", "4", "5", "6", "7", "8"];
+  const ext = extension?.toLowerCase();
+  const typeMap = {
+    pdf: "PDF Document",
+    doc: "Word Document",
+    docx: "Word Document",
+    xls: "Excel Spreadsheet",
+    xlsx: "Excel Spreadsheet",
+    csv: "CSV Spreadsheet",
+    ppt: "PowerPoint Presentation",
+    pptx: "PowerPoint Presentation",
+    zip: "ZIP Archive",
+    rar: "RAR Archive",
+    "7z": "7-Zip Archive",
+    tar: "TAR Archive",
+    gz: "GZIP Archive",
+    jpg: "JPEG Image",
+    jpeg: "JPEG Image",
+    png: "PNG Image",
+    gif: "GIF Image",
+    bmp: "Bitmap Image",
+    svg: "SVG Vector",
+    webp: "WebP Image",
+    ico: "Icon File",
+    mp4: "MP4 Video",
+    avi: "AVI Video",
+    mov: "QuickTime Video",
+    wmv: "Windows Media Video",
+    flv: "Flash Video",
+    mkv: "Matroska Video",
+    webm: "WebM Video",
+    m4v: "M4V Video",
+    js: "JavaScript File",
+    jsx: "React JavaScript",
+    ts: "TypeScript File",
+    tsx: "React TypeScript",
+    py: "Python Script",
+    java: "Java Source",
+    cpp: "C++ Source",
+    c: "C Source",
+    h: "C/C++ Header",
+    hpp: "C++ Header",
+    cs: "C# Source",
+    php: "PHP Script",
+    rb: "Ruby Script",
+    go: "Go Source",
+    rs: "Rust Source",
+    swift: "Swift Source",
+    kt: "Kotlin Source",
+    scala: "Scala Source",
+    r: "R Script",
+    m: "MATLAB Script",
+    sh: "Shell Script",
+    bat: "Batch Script",
+    sql: "SQL Script",
+    html: "HTML Document",
+    css: "CSS Stylesheet",
+    scss: "SASS Stylesheet",
+    sass: "SASS Stylesheet",
+    less: "LESS Stylesheet",
+    json: "JSON Data",
+    xml: "XML Document",
+    yaml: "YAML Config",
+    yml: "YAML Config",
+    toml: "TOML Config",
+    ini: "INI Config",
+    cfg: "Config File",
+    conf: "Config File",
+    txt: "Text File",
+    md: "Markdown Document",
+    markdown: "Markdown Document",
+    log: "Log File",
+  };
 
-  // Filter and sort assignments
-  const filteredAndSortedAssignments = useMemo(() => {
-    let filtered = assignments.filter((assignment) => {
-      const searchLower = searchQuery.toLowerCase();
-      const titleMatch = assignment.title.toLowerCase().includes(searchLower);
-      const courseMatch = assignment.course
-        ?.toLowerCase()
-        .includes(searchLower);
-      const descriptionMatch = assignment.description
-        ?.toLowerCase()
-        .includes(searchLower);
-      const semesterFilter = assignment.semester === filterSemester;
+  return typeMap[ext] || `${ext?.toUpperCase() || "Unknown"} File`;
+}
 
-      return (titleMatch || courseMatch || descriptionMatch) && semesterFilter;
-    });
-
-    // Sort assignments
-    if (sortBy === "dueDate") {
-      filtered = [...filtered].sort((a, b) => {
-        return new Date(a.dueDate) - new Date(b.dueDate);
-      });
-    } else if (sortBy === "recent") {
-      filtered = [...filtered].sort((a, b) => {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
+// File icon component
+function FileIcon({ extension, isUrl }) {
+  const getIconStyle = () => {
+    if (isUrl) {
+      return {
+        bg: "bg-gradient-to-br from-blue-100 to-blue-200",
+        color: "text-blue-600",
+        icon: (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+        ),
+      };
     }
 
-    return filtered;
-  }, [assignments, searchQuery, sortBy, filterSemester]);
+    const ext = extension?.toLowerCase();
+
+    if (ext === "pdf") {
+      return {
+        bg: "bg-gradient-to-br from-red-100 to-red-200",
+        color: "text-red-600",
+        icon: (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+        ),
+      };
+    }
+
+    if (["doc", "docx"].includes(ext)) {
+      return {
+        bg: "bg-gradient-to-br from-blue-100 to-blue-200",
+        color: "text-blue-600",
+        icon: (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        ),
+      };
+    }
+
+    if (["xls", "xlsx", "csv"].includes(ext)) {
+      return {
+        bg: "bg-gradient-to-br from-green-100 to-green-200",
+        color: "text-green-600",
+        icon: (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+        ),
+      };
+    }
+
+    if (["ppt", "pptx"].includes(ext)) {
+      return {
+        bg: "bg-gradient-to-br from-orange-100 to-orange-200",
+        color: "text-orange-600",
+        icon: (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+          </svg>
+        ),
+      };
+    }
+
+    if (["zip", "rar", "7z", "tar", "gz"].includes(ext)) {
+      return {
+        bg: "bg-gradient-to-br from-purple-100 to-purple-200",
+        color: "text-purple-600",
+        icon: (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+          </svg>
+        ),
+      };
+    }
+
+    if (["jpg", "jpeg", "png", "gif", "bmp", "svg", "webp", "ico"].includes(ext)) {
+      return {
+        bg: "bg-gradient-to-br from-pink-100 to-rose-200",
+        color: "text-pink-600",
+        icon: (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        ),
+      };
+    }
+
+    if (["mp4", "avi", "mov", "wmv", "flv", "mkv", "webm", "m4v"].includes(ext)) {
+      return {
+        bg: "bg-gradient-to-br from-indigo-100 to-purple-200",
+        color: "text-indigo-600",
+        icon: (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        ),
+      };
+    }
+
+    if (["js", "jsx", "ts", "tsx", "py", "java", "cpp", "c", "h", "hpp", "cs", "php", "rb", "go", "rs", "swift", "kt", "scala", "r", "m", "sh", "bat", "sql"].includes(ext)) {
+      return {
+        bg: "bg-gradient-to-br from-yellow-100 to-amber-200",
+        color: "text-amber-700",
+        icon: (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+        ),
+      };
+    }
+
+    if (["html", "css", "scss", "sass", "less"].includes(ext)) {
+      return {
+        bg: "bg-gradient-to-br from-cyan-100 to-blue-200",
+        color: "text-cyan-700",
+        icon: (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+        ),
+      };
+    }
+
+    if (["json", "xml", "yaml", "yml", "toml", "ini", "cfg", "conf"].includes(ext)) {
+      return {
+        bg: "bg-gradient-to-br from-emerald-100 to-teal-200",
+        color: "text-emerald-700",
+        icon: (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+          </svg>
+        ),
+      };
+    }
+
+    if (["txt", "md", "markdown", "log"].includes(ext)) {
+      return {
+        bg: "bg-gradient-to-br from-gray-100 to-gray-200",
+        color: "text-gray-600",
+        icon: (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        ),
+      };
+    }
+
+    return {
+      bg: "bg-gradient-to-br from-slate-100 to-slate-200",
+      color: "text-slate-600",
+      icon: (
+        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+      ),
+    };
+  };
+
+  const style = getIconStyle();
 
   return (
-    <div className="min-h-screen">
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f5f9;
-          border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #94a3b8;
-          border-radius: 3px;
-          transition: background 0.2s;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #64748b;
-        }
-      `}</style>
-
-      {/* Header Section */}
-      <div className="mb-6 sm:mb-10">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-2 sm:mb-3 tracking-tight">
-          Assignments
-        </h1>
-        <p className="text-base sm:text-lg text-slate-600 mb-6 sm:mb-8">
-          Track and manage course assignments
-        </p>
-      </div>
-
-      {/* Search, Semester, and Sort Filter */}
-      <div className="mb-6 sm:mb-8 flex flex-col md:flex-row gap-3 sm:gap-4">
-        {/* Search Bar */}
-        <div className="flex-1 relative">
-          <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-            <svg
-              className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-          <input
-            type="text"
-            placeholder="Search assignments..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 sm:pl-12 pr-10 sm:pr-4 py-3 sm:py-3.5 bg-white border-2 border-slate-200 rounded-xl text-sm sm:text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all shadow-sm"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
-            >
-              <svg
-                className="w-4 h-4 sm:w-5 sm:h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          )}
-        </div>
-
-        {/* Semester and Sort Dropdowns - side by side on mobile, same row as search on desktop */}
-        <div className="flex gap-3 sm:gap-4 md:contents">
-          {/* Semester Dropdown */}
-          <div className="relative flex-1 md:w-56 md:flex-none">
-            <select
-              value={filterSemester}
-              onChange={(e) => setFilterSemester(e.target.value)}
-              className="w-full appearance-none pl-3 sm:pl-4 pr-8 sm:pr-10 py-3 sm:py-3.5 bg-white border-2 border-slate-200 rounded-xl text-sm sm:text-base text-slate-900 font-medium focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all cursor-pointer shadow-sm"
-            >
-              {allSemesters.map((sem) => (
-                <option key={sem} value={sem}>
-                  Sem {sem}
-                </option>
-              ))}
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-3 pointer-events-none">
-              <svg
-                className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
-
-          {/* Sort Dropdown */}
-          <div className="relative flex-1 md:w-56 md:flex-none">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="w-full appearance-none pl-3 sm:pl-4 pr-8 sm:pr-10 py-3 sm:py-3.5 bg-white border-2 border-slate-200 rounded-xl text-sm sm:text-base text-slate-900 font-medium focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 transition-all cursor-pointer shadow-sm"
-            >
-              <option value="default">Default</option>
-              <option value="dueDate">Due Date</option>
-              <option value="recent">Recent</option>
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-3 pointer-events-none">
-              <svg
-                className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Results Count */}
-      {searchQuery && (
-        <div className="mb-4 sm:mb-5 text-slate-600 text-xs sm:text-sm font-medium">
-          Found {filteredAndSortedAssignments.length} assignment
-          {filteredAndSortedAssignments.length !== 1 ? "s" : ""} in Semester{" "}
-          {filterSemester}
-        </div>
-      )}
-
-      {/* Assignments Grid */}
-      {filteredAndSortedAssignments.length === 0 ? (
-        <div className="text-center py-12 sm:py-20 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-5 rounded-full bg-slate-100 flex items-center justify-center">
-            <svg
-              className="w-8 h-8 sm:w-10 sm:h-10 text-slate-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              {searchQuery ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              )}
-            </svg>
-          </div>
-          <h3 className="text-lg sm:text-xl font-semibold text-slate-800 mb-2 px-4">
-            {searchQuery
-              ? "No matching assignments found"
-              : "No assignments yet"}
-          </h3>
-          <p className="text-sm sm:text-base text-slate-500 px-4">
-            {searchQuery
-              ? "Try adjusting your search terms or selecting a different semester"
-              : `Assignments for Semester ${filterSemester} will appear here`}
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4 sm:space-y-5">
-          {filteredAndSortedAssignments.map((assignment, index) => (
-            <AssignmentCard key={assignment._id} assignment={assignment} index={index} />
-          ))}
-        </div>
-      )}
+    <div className={`w-8 h-8 sm:w-10 sm:h-10 ${style.bg} rounded-lg flex items-center justify-center flex-shrink-0`}>
+      <div className={style.color}>{style.icon}</div>
     </div>
   );
 }
 
-function AssignmentCard({ assignment, index }) {
+export default function Assignments({ data }) {
+  const [selectedSemester, setSelectedSemester] = useState("3");
+  const allSemesters = ["1", "2", "3", "4", "5", "6", "7", "8"];
+
+  const semesterAssignments = useMemo(() => {
+    return data.filter((assignment) => assignment.semester === selectedSemester);
+  }, [data, selectedSemester]);
+
+  return (
+    <div className="min-h-screen">
+      <div className="mb-8 sm:mb-12">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-3 tracking-tight">
+          Assignments
+        </h1>
+        <p className="text-base sm:text-lg text-slate-600">
+          Track and manage course assignments
+        </p>
+      </div>
+
+      <div className="mb-6 sm:mb-8">
+        <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+          {allSemesters.map((sem) => (
+            <button
+              key={sem}
+              onClick={() => setSelectedSemester(sem)}
+              className={`px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-200 text-xs sm:text-sm ${
+                selectedSemester === sem
+                  ? "bg-blue-700 text-white shadow-lg shadow-blue-200"
+                  : "bg-white text-slate-700 hover:bg-slate-50 border-2 border-slate-200"
+              }`}
+            >
+              Sem {sem}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {semesterAssignments.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-16 sm:py-24 bg-white rounded-2xl border-2 border-slate-200 shadow-sm"
+          >
+            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+              <svg className="w-8 h-8 sm:w-10 sm:h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-slate-800 mb-2">
+              No assignments yet
+            </h3>
+            <p className="text-slate-500">
+              Assignments for Semester {selectedSemester} will appear here
+            </p>
+          </motion.div>
+        ) : (
+          <motion.div
+            key={selectedSemester}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-5 sm:space-y-6"
+          >
+            {semesterAssignments.map((assignment) => (
+              <AssignmentCard key={assignment._id} assignment={assignment} />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function AssignmentCard({ assignment }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef(null);
+  const sidePanelRef = useRef(null);
+  const [sidePanelScale, setSidePanelScale] = useState(1);
+  
   const {
-    _id,
-    title,
-    description,
+    label,
     dueDate,
     createdAt,
     attachments,
     submissionLink,
     course,
-    semester,
   } = assignment;
 
-  // Format dates
+  // Calculate scale for side panel content based on card height
+  useEffect(() => {
+    const calculateScale = () => {
+      if (!cardRef.current || !sidePanelRef.current) return;
+      
+      const cardHeight = cardRef.current.offsetHeight;
+      const sidePanelContent = sidePanelRef.current;
+      const contentHeight = sidePanelContent.scrollHeight;
+      
+      // Minimum card height that comfortably fits all content
+      const minComfortableHeight = 220;
+      
+      if (cardHeight < minComfortableHeight) {
+        // Scale down content proportionally if card is too small
+        const scale = Math.max(0.75, cardHeight / minComfortableHeight);
+        setSidePanelScale(scale);
+      } else {
+        setSidePanelScale(1);
+      }
+    };
+
+    calculateScale();
+    window.addEventListener('resize', calculateScale);
+    
+    // Recalculate when expanded state changes
+    const timer = setTimeout(calculateScale, 100);
+    
+    return () => {
+      window.removeEventListener('resize', calculateScale);
+      clearTimeout(timer);
+    };
+  }, [isExpanded, attachments]);
+
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
@@ -274,7 +430,6 @@ function AssignmentCard({ assignment, index }) {
     });
   };
 
-  // Calculate days until due
   const getDaysUntilDue = () => {
     const now = new Date();
     const due = new Date(dueDate);
@@ -287,262 +442,303 @@ function AssignmentCard({ assignment, index }) {
   const isOverdue = daysUntilDue < 0;
   const isDueSoon = daysUntilDue <= 3 && daysUntilDue >= 0;
 
-  // Collect all files
   const allFiles = [];
   if (attachments && attachments.length > 0) {
     attachments.forEach((attachment) => {
-      const fileUrl = attachment.fileUrl || attachment.file?.url;
-      const fileName =
-        attachment.name ||
-        attachment.file?.originalFilename ||
-        attachment.fileUrl ||
-        "Document";
+      const isUrl = !!attachment.fileUrl;
+      const file = attachment.file?.asset;
+      const fileUrl = attachment.fileUrl || file?.url;
+      
+      const fileName = isUrl
+        ? attachment.name || attachment.fileUrl || "External Link"
+        : file?.originalFilename || "Download";
 
       if (fileUrl) {
         allFiles.push({
           url: fileUrl,
           name: fileName,
+          extension: file?.extension,
+          size: file?.size,
+          isUrl: isUrl,
         });
       }
     });
   }
 
   return (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "100px", amount: 0.3 }}
-      variants={fadeInUp}
+    <motion.div 
+      initial="hidden" 
+      animate="visible" 
+      variants={fadeIn}
+      className="relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="bg-white border-2 border-slate-200 rounded-2xl p-4 sm:p-6 hover:shadow-xl hover:border-indigo-300 transition-all duration-300 hover:-translate-y-0.5">
-        {/* Header: Course Badge + Dates */}
-        <div className="flex items-start justify-between gap-3 sm:gap-4 mb-4">
-          {/* Course Badge */}
-          {course && (
-            <span className="inline-block px-1.5 sm:px-3 md:px-4 py-0.5 sm:py-1 md:py-1.5 bg-indigo-100 text-indigo-700 text-[9px] sm:text-xs md:text-sm font-semibold rounded-md sm:rounded-lg border border-indigo-200 w-fit">
-              {course}
-            </span>
-          )}
-
-          {/* Dates - top right on all screens */}
-          <div className="flex flex-col items-end gap-1 text-[9px] sm:text-[10px] md:text-sm flex-shrink-0">
-            <div className="flex items-center gap-1">
-              <svg
-                className={`w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 flex-shrink-0 ${
-                  isOverdue
-                    ? "text-red-600"
-                    : isDueSoon
-                    ? "text-amber-600"
-                    : "text-slate-500"
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
+      <div 
+        ref={cardRef}
+        className="bg-white border-2 border-slate-200 rounded-2xl hover:shadow-lg hover:border-slate-300 transition-all duration-300 relative overflow-hidden"
+      >
+        {course && (
+          <div className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200 px-5 py-2.5 sm:px-7 sm:py-3 flex items-center gap-2 relative">
+            <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center shadow-sm border border-slate-200 flex-shrink-0">
+              <svg className="w-3.5 h-3.5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
-              <span
-                className={`font-semibold text-right leading-tight ${
-                  isOverdue
-                    ? "text-red-600"
-                    : isDueSoon
-                    ? "text-amber-600"
-                    : "text-slate-700"
-                }`}
-              >
-                Due {formatDate(dueDate)}
-                {isOverdue && " • Overdue"}
-                {isDueSoon && !isOverdue && ` • ${daysUntilDue}d left`}
-              </span>
             </div>
-            <div className="flex items-center gap-1 text-slate-500 font-medium">
-              <svg
-                className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 flex-shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+            <span className="font-bold text-slate-800 text-xs sm:text-sm flex-1 truncate pr-2">{course}</span>
+            
+            <motion.button
+              initial={false}
+              animate={{ 
+                opacity: isHovered || isExpanded ? 1 : 0.6,
+                rotate: isExpanded ? 180 : 0
+              }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-full bg-white hover:bg-slate-100 text-slate-700 transition-all hover:scale-110 shadow-sm border border-slate-200 z-20"
+              aria-label={isExpanded ? "Hide submission details" : "Show submission details"}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
               </svg>
-              <span className="text-right leading-tight">Posted {formatDate(createdAt)}</span>
-            </div>
+            </motion.button>
           </div>
+        )}
+
+        <div className="p-3 sm:p-4 relative">
+          <div className="mb-5">
+            <p className="text-base sm:text-lg text-slate-900 leading-relaxed whitespace-pre-wrap break-words">
+              {label}
+            </p>
+          </div>
+
+          {allFiles.length > 0 && (
+            <AttachmentsSection attachments={allFiles} />
+          )}
         </div>
 
-        {/* Title */}
-        <h4 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4 text-slate-900 leading-tight hover:text-indigo-600 transition-colors">
-          {title}
-        </h4>
+        <motion.div
+          initial={false}
+          animate={{ 
+            x: isExpanded ? 0 : '100%'
+          }}
+          transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+          className="absolute top-0 right-0 bottom-0 w-36 bg-gradient-to-b from-slate-700 via-slate-800 to-slate-900 rounded-tr-2xl rounded-br-2xl"
+          style={{ pointerEvents: isExpanded ? 'auto' : 'none' }}
+        >
+          <motion.div 
+            ref={sidePanelRef}
+            initial={false}
+            animate={{ 
+              opacity: isExpanded ? 1 : 0,
+              scale: sidePanelScale
+            }}
+            transition={{ 
+              opacity: { duration: 0.2, delay: isExpanded ? 0.15 : 0 },
+              scale: { duration: 0.2 }
+            }}
+            className="h-full w-full flex flex-col items-center justify-center p-3 gap-2.5"
+            style={{ transformOrigin: 'center center' }}
+          >
+            <div className="text-center w-full pb-2 border-b border-slate-600">
+              <div className="text-slate-400 text-[10px] font-medium mb-0.5 uppercase tracking-wide">
+                Posted
+              </div>
+              <div className="text-white font-bold text-xs leading-tight">
+                {formatDate(createdAt)}
+              </div>
+            </div>
 
-        {/* Description */}
-        {description && (
-          <p className="text-slate-600 text-sm sm:text-base mb-4 leading-relaxed whitespace-pre-wrap">
-            {description}
-          </p>
-        )}
+            <div className="text-center w-full">
+              <div className="text-slate-300 text-[10px] font-medium mb-0.5 uppercase tracking-wide">
+                Due Date
+              </div>
+              <div className="text-white font-bold text-xs leading-tight">
+                {formatDate(dueDate)}
+              </div>
+            </div>
 
-        {/* Attachments Section */}
-        {allFiles.length > 0 && <AttachmentsSection attachments={allFiles} />}
+            <div className="w-full h-px bg-slate-600"></div>
 
-        {/* Submit Button */}
-        {submissionLink && (
-          <div className="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t-2 border-slate-100">
-            <a
-              href={submissionLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              <svg
-                className="w-4 h-4 sm:w-5 sm:h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {submissionLink && (
+              <a
+                href={submissionLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative w-full px-2.5 py-1.5 bg-white hover:bg-slate-50 text-slate-800 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center gap-1"
+                onClick={(e) => e.stopPropagation()}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              Submit Assignment
-            </a>
-          </div>
-        )}
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="font-bold text-[11px]">Submit</span>
+              </a>
+            )}
+          </motion.div>
+        </motion.div>
       </div>
     </motion.div>
   );
 }
 
 function AttachmentsSection({ attachments }) {
-  const [showAll, setShowAll] = useState(false);
-  const INITIAL_DISPLAY_COUNT = 2;
-  const hasMore = attachments.length > INITIAL_DISPLAY_COUNT;
-  const displayedAttachments = showAll
-    ? attachments
-    : attachments.slice(0, INITIAL_DISPLAY_COUNT);
+  const containerRef = useRef(null);
+  const measureRef = useRef(null);
+  const [maxHeight, setMaxHeight] = useState(null);
+
+  useEffect(() => {
+    const calculateHeight = () => {
+      if (attachments.length > 2 && measureRef.current) {
+        const items = measureRef.current?.children;
+        if (items && items.length >= 2) {
+          const firstItemRect = items[0].getBoundingClientRect();
+          const secondItemRect = items[1].getBoundingClientRect();
+          const calculatedHeight = secondItemRect.bottom - firstItemRect.top;
+          setMaxHeight(calculatedHeight);
+        }
+      }
+    };
+
+    const timer = setTimeout(calculateHeight, 100);
+    window.addEventListener('resize', calculateHeight);
+    
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', calculateHeight);
+    };
+  }, [attachments]);
+
+  const formatFileSize = (bytes) => {
+    if (!bytes) return "";
+    const mb = bytes / (1024 * 1024);
+    return mb >= 1 ? `${mb.toFixed(1)} MB` : `${(bytes / 1024).toFixed(1)} KB`;
+  };
+
+  const handleAttachmentClick = async (attachment, e) => {
+    e.stopPropagation();
+    const url = attachment.url;
+
+    if (!url || url === "#") {
+      console.warn("No valid URL for attachment");
+      return;
+    }
+
+    if (attachment.isUrl) {
+      window.open(url, "_blank", "noopener,noreferrer");
+    } else {
+      const fileName = attachment.name || "download";
+
+      if (url.includes("cdn.sanity.io") || url.includes("sanity.io")) {
+        const downloadUrl = `${url}?dl=${encodeURIComponent(fileName)}`;
+        window.location.href = downloadUrl;
+      } else {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error("Fetch failed");
+
+          const blob = await response.blob();
+          const blobUrl = window.URL.createObjectURL(blob);
+
+          const link = document.createElement("a");
+          link.href = blobUrl;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
+        } catch (error) {
+          console.error("Download failed:", error);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          link.target = "_blank";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      }
+    }
+  };
 
   return (
-    <div className="space-y-3 pt-4 sm:pt-5 border-t-2 border-slate-100">
-      {hasMore && (
-        <div className="flex justify-end mb-2">
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="text-xs sm:text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors flex items-center gap-1"
-          >
-            {showAll ? (
-              <>
-                Show less
-                <svg
-                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 15l7-7 7 7"
-                  />
-                </svg>
-              </>
-            ) : (
-              <>
-                Show all
-                <svg
-                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </>
-            )}
-          </button>
-        </div>
-      )}
+    <div className="pt-5 border-t border-slate-200">
       <div
-        className={`grid gap-2 sm:gap-3 ${
-          showAll ? "max-h-64 overflow-y-auto pr-2 custom-scrollbar" : ""
-        }`}
-        style={
-          showAll
-            ? {
-                scrollbarWidth: "thin",
-                scrollbarColor: "#94a3b8 #f1f5f9",
-              }
-            : {}
-        }
+        ref={containerRef}
+        className={`space-y-2 ${attachments.length > 2 ? 'custom-scrollbar overflow-y-auto pr-2' : ''}`}
+        style={attachments.length > 2 && maxHeight ? { maxHeight: `${maxHeight}px` } : {}}
       >
-        {displayedAttachments.map((attachment, index) => {
-          const fileUrl = attachment.url;
-          const fileName = attachment.name;
+        {attachments.map((attachment, idx) => {
+          const fileType = getFileTypeDescription(attachment.extension, attachment.isUrl);
 
           return (
-            <a
-              key={index}
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-slate-50 hover:bg-indigo-50 border-2 border-slate-200 hover:border-indigo-300 rounded-xl transition-all duration-200 group/attachment min-w-0"
+            <div
+              key={idx}
+              onClick={(e) => handleAttachmentClick(attachment, e)}
+              className="flex items-center gap-3 p-3 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-xl transition-all group cursor-pointer"
             >
-              <div className="flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 bg-indigo-100 group-hover/attachment:bg-indigo-200 rounded-lg flex items-center justify-center transition-colors">
-                <svg
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <div className="flex-1 min-w-0 overflow-hidden">
-                <div 
-                  className="text-xs sm:text-sm font-semibold text-slate-900 truncate group-hover/attachment:text-indigo-700 transition-colors"
-                  title={fileName}
-                >
-                  {fileName}
+              <FileIcon extension={attachment.extension} isUrl={attachment.isUrl} />
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-slate-900 truncate group-hover:text-blue-700" title={attachment.name}>
+                  {attachment.name}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                  <span>{fileType}</span>
+                  {!attachment.isUrl && attachment.size && (
+                    <>
+                      <span>•</span>
+                      <span>{formatFileSize(attachment.size)}</span>
+                    </>
+                  )}
                 </div>
               </div>
-              <svg
-                className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 group-hover/attachment:text-indigo-600 flex-shrink-0 transition-colors"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                />
-              </svg>
-            </a>
+              {attachment.isUrl ? (
+                <svg className="w-5 h-5 text-slate-400 group-hover:text-blue-700 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 text-slate-400 group-hover:text-blue-700 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              )}
+            </div>
           );
         })}
+      </div>
+
+      {/* Hidden measurement container */}
+      <div className="invisible absolute pointer-events-none" aria-hidden="true">
+        <div ref={measureRef} className="space-y-2">
+          {attachments.slice(0, 2).map((attachment, idx) => {
+            const fileType = getFileTypeDescription(attachment.extension, attachment.isUrl);
+
+            return (
+              <div
+                key={`measure-${idx}`}
+                className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl"
+              >
+                <FileIcon extension={attachment.extension} isUrl={attachment.isUrl} />
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-slate-900 truncate" title={attachment.name}>
+                    {attachment.name}
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                    <span>{fileType}</span>
+                    {!attachment.isUrl && attachment.size && (
+                      <>
+                        <span>•</span>
+                        <span>{formatFileSize(attachment.size)}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <svg className="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

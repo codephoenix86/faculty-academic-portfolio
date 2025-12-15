@@ -150,16 +150,19 @@ export async function getBooks() {
 export async function getAssignments() {
   const query = `*[_type == "assignment"] | order(dueDate asc) {
     _id,
-    title,
-    description,
+    label,
     createdAt,
     dueDate,
     attachments[] {
       name,
-      "file": file.asset->{
-        _id,
-        url,
-        originalFilename
+      file {
+        asset-> {
+          _id,
+          url,
+          originalFilename,
+          extension,
+          size
+        }
       },
       fileUrl
     },
@@ -179,12 +182,14 @@ export async function getResources() {
     semester,
     attachments[] {
       name,
-      "file": file.asset->{
-        _id,
-        url,
-        originalFilename,
-        extension,
-        size
+      file {
+        asset-> {
+          _id,
+          url,
+          originalFilename,
+          extension,
+          size
+        }
       },
       fileUrl
     },
@@ -200,17 +205,20 @@ export async function getAnnouncements() {
     label,
     attachments[] {
       name,
-      "file": select(
-        defined(file.asset) => file.asset->{
+      file {
+        asset-> {
           _id,
           url,
           originalFilename,
           extension,
-          size
+          size,
+          mimeType,
+          _type
         }
-      ),
+      },
       fileUrl
     },
+    deadline,
     expiryDate,
     createdAt
   }`;

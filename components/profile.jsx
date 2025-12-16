@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export default function Hero({ profile }) {
+export default function Profile({ profile }) {
   const [isImpactVisible, setIsImpactVisible] = useState(false);
   const impactRef = useRef(null);
 
@@ -87,19 +87,19 @@ export default function Hero({ profile }) {
 
         .animate-slide-left-2 {
           animation: slideInFromLeft 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-          animation-delay: 0.12s;
+          animation-delay: 0.08s;
           opacity: 0;
         }
 
         .animate-slide-left-3 {
           animation: slideInFromLeft 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-          animation-delay: 0.24s;
+          animation-delay: 0.16s;
           opacity: 0;
         }
 
         .animate-slide-left-4 {
           animation: slideInFromLeft 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-          animation-delay: 0.36s;
+          animation-delay: 0.24s;
           opacity: 0;
         }
 
@@ -149,7 +149,7 @@ export default function Hero({ profile }) {
           <div className="flex-1 w-full">
             {/* Name and Role */}
             <div className="animate-slide-left-1">
-              <h1 className="text-3xl md:text-5xl font-bold text-slate-900 mb-2 text-balance">
+              <h1 className="text-3xl md:text-5xl font-semibold text-slate-900 mb-2">
                 {profile.name}
               </h1>
               <p className="text-base md:text-xl text-accent-600 font-semibold mb-6 md:mb-8">
@@ -176,7 +176,7 @@ export default function Hero({ profile }) {
 
             {/* Profile Image - Mobile Only */}
             <div className="md:hidden mb-6 animate-slide-left-3">
-              <div className="relative w-56 h-56 mx-auto rounded-full shadow-lg hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] transition-shadow duration-300 overflow-hidden">
+              <div className="relative w-64 h-64 mx-auto rounded-full shadow-lg hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] transition-shadow duration-300 overflow-hidden">
                 <img
                   src={profile.profileImage.asset.url || "/placeholder.svg"}
                   alt={profile.name}
@@ -228,12 +228,12 @@ export default function Hero({ profile }) {
         {/* Research Impact Section */}
         <div 
           ref={impactRef}
-          className="mt-32 md:mt-40"
+          className="mt-12 md:mt-16"
         >
-          <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">
+          <h2 className={`text-3xl font-semibold text-slate-900 mb-8 text-center impact-card ${isImpactVisible ? 'visible' : ''}`}>
             Research Impact
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-md sm:max-w-2xl md:max-w-none mx-auto">
             {/* Citations Card */}
             <div className={`impact-card bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200 ${isImpactVisible ? 'visible' : ''}`}>
               <div className="flex items-center mb-4">

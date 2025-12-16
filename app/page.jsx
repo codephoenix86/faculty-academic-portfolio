@@ -1,4 +1,4 @@
-import Hero from "@/components/hero";
+import Profile from "@/components/profile";
 import { getProfile } from "@/utils/sanity";
 import VisitorTracker from "@/components/VisitorTracker";
 
@@ -8,7 +8,7 @@ export default async function Home() {
   return (
     <main>
       <VisitorTracker profileId={profile?._id} initialCount={profile?.visitorCount || 0} />
-      <Hero profile={profile} />
+      <Profile profile={profile} />
     </main>
   );
 }

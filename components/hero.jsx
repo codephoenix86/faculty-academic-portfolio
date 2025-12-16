@@ -31,7 +31,7 @@ export default function Hero({ profile }) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-slate-50 px-4 py-12 md:py-16">
+    <div className="px-4 py-12 md:py-16">
       <style>{`
         @keyframes slideInFromLeft {
           from {
@@ -152,7 +152,7 @@ export default function Hero({ profile }) {
               <h1 className="text-3xl md:text-5xl font-bold text-slate-900 mb-2 text-balance">
                 {profile.name}
               </h1>
-              <p className="text-base md:text-xl text-orange-600 font-semibold mb-6 md:mb-8">
+              <p className="text-base md:text-xl text-accent-600 font-semibold mb-6 md:mb-8">
                 {profile.role}
               </p>
             </div>
@@ -193,14 +193,10 @@ export default function Hero({ profile }) {
               <div className="flex flex-wrap gap-2 md:gap-3">
                 {profile.contact.researchInterests.map((interest, idx) => {
                   const colors = [
-                    'bg-orange-100 text-orange-700 hover:bg-orange-200',
-                    'bg-blue-100 text-blue-700 hover:bg-blue-200',
+                    'bg-primary-100 text-primary-700 hover:bg-primary-200',
+                    'bg-accent-100 text-accent-700 hover:bg-accent-200',
                     'bg-green-100 text-green-700 hover:bg-green-200',
                     'bg-purple-100 text-purple-700 hover:bg-purple-200',
-                    'bg-pink-100 text-pink-700 hover:bg-pink-200',
-                    'bg-indigo-100 text-indigo-700 hover:bg-indigo-200',
-                    'bg-teal-100 text-teal-700 hover:bg-teal-200',
-                    'bg-cyan-100 text-cyan-700 hover:bg-cyan-200',
                   ];
                   const colorClass = colors[idx % colors.length];
                   
@@ -241,9 +237,9 @@ export default function Hero({ profile }) {
             {/* Citations Card */}
             <div className={`impact-card bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200 ${isImpactVisible ? 'visible' : ''}`}>
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mr-4">
                   <svg
-                    className="w-6 h-6 text-blue-600"
+                    className="w-6 h-6 text-primary-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -260,7 +256,7 @@ export default function Hero({ profile }) {
                   Citations
                 </h3>
               </div>
-              <p className="text-4xl font-bold text-blue-600 mb-2">
+              <p className="text-4xl font-bold text-primary-600 mb-2">
                 {profile.citations}
               </p>
               <p className="text-slate-600 text-sm">
@@ -295,9 +291,9 @@ export default function Hero({ profile }) {
             {/* i10-Index Card */}
             <div className={`impact-card bg-white rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow duration-300 border border-slate-200 ${isImpactVisible ? 'visible' : ''}`}>
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mr-4">
+                <div className="w-12 h-12 rounded-full bg-accent-100 flex items-center justify-center mr-4">
                   <svg
-                    className="w-6 h-6 text-orange-600"
+                    className="w-6 h-6 text-accent-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -314,7 +310,7 @@ export default function Hero({ profile }) {
                   i10-Index
                 </h3>
               </div>
-              <p className="text-4xl font-bold text-orange-600 mb-2">
+              <p className="text-4xl font-bold text-accent-600 mb-2">
                 {profile.i10Index}
               </p>
               <p className="text-slate-600 text-sm">

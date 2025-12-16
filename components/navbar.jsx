@@ -322,8 +322,8 @@ export default function Nav() {
                       onClick={() => toggleDropdown(link.name)}
                       className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 group ${
                         isActive(link)
-                          ? "text-blue-600 bg-blue-50 shadow-sm"
-                          : "text-gray-700 hover:text-blue-600 hover:bg-blue-50/50"
+                          ? "text-primary-600 bg-primary-50 shadow-sm"
+                          : "text-gray-700 hover:text-primary-600 hover:bg-primary-50/50"
                       }`}
                     >
                       <span className="text-base">{link.icon}</span>
@@ -357,7 +357,7 @@ export default function Nav() {
                             onClick={handleDropdownItemClick}
                             className={`flex items-center gap-3 px-4 py-2.5 mx-2 my-1 rounded-lg text-sm font-medium transition-all duration-200 group ${
                               pathname === item.href
-                                ? "text-blue-600 bg-blue-50 shadow-sm"
+                                ? "text-primary-600 bg-primary-50 shadow-sm"
                                 : "text-gray-700 hover:bg-gray-50 hover:translate-x-1"
                             }`}
                             style={{
@@ -391,8 +391,8 @@ export default function Nav() {
                     href={link.href}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 group ${
                       isActive(link)
-                        ? "text-blue-600 bg-blue-50 shadow-sm"
-                        : "text-gray-700 hover:text-blue-600 hover:bg-blue-50/50"
+                        ? "text-primary-600 bg-primary-50 shadow-sm"
+                        : "text-gray-700 hover:text-primary-600 hover:bg-primary-50/50"
                     }`}
                   >
                     <span className="text-base">{link.icon}</span>
@@ -450,7 +450,7 @@ export default function Nav() {
                       onClick={() => toggleDropdown(link.name)}
                       className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
                         isActive(link)
-                          ? "text-blue-600 bg-blue-50"
+                          ? "text-primary-600 bg-primary-50"
                           : "text-gray-700 hover:bg-gray-50"
                       }`}
                     >
@@ -475,14 +475,14 @@ export default function Nav() {
                       </svg>
                     </button>
                     {openDropdown === link.name && (
-                      <div className="ml-6 mt-2 space-y-1 pl-4 border-l-2 border-blue-200">
+                      <div className="ml-6 mt-2 space-y-1 pl-4 border-l-2 border-primary-200">
                         {link.dropdown.map((item) => (
                           <Link
                             key={item.name}
                             href={item.href}
                             className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                               pathname === item.href
-                                ? "text-blue-600 bg-blue-50"
+                                ? "text-primary-600 bg-primary-50"
                                 : "text-gray-600 hover:bg-gray-50"
                             }`}
                           >
@@ -498,7 +498,7 @@ export default function Nav() {
                     href={link.href}
                     className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
                       isActive(link)
-                        ? "text-blue-600 bg-blue-50"
+                        ? "text-primary-600 bg-primary-50"
                         : "text-gray-700 hover:bg-gray-50"
                     }`}
                   >

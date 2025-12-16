@@ -47,11 +47,7 @@ export async function getProfile() {
     contact{
       phones,
       emails,
-      address{
-        department,
-        institution,
-        location
-      },
+      address,
       researchInterests
     },
 

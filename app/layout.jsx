@@ -13,7 +13,7 @@ export default async function RootLayout({ children }) {
   
   return (
     <html lang="en">
-      <body>
+      <body className="bg-gradient-to-br from-blue-50 via-slate-50 to-gray-50">
         <div className="flex flex-col min-h-screen">
           {/* Navigation */}
           <NavBar />

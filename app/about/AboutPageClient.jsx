@@ -73,9 +73,11 @@ export default function AboutPageClient({ profileData }) {
               </div>
               <h2 className="text-2xl md:text-3xl font-semibold text-gray-900">About Me</h2>
             </div>
-            <p className="text-gray-700 leading-relaxed whitespace-pre-line text-justify">
-              {data.bio}
-            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <p className="text-gray-700 leading-relaxed whitespace-pre-line text-justify">
+                {data.bio}
+              </p>
+            </div>
           </div>
         )}
 
@@ -101,7 +103,7 @@ export default function AboutPageClient({ profileData }) {
               {/* Timeline line */}
               <div className="absolute left-[0.5rem] md:left-[0.875rem] top-0 bottom-0 w-0.5 bg-gray-300"></div>
 
-              <div className="space-y-8">
+              <div className="space-y-4">
                 {data.education.map((edu, index) => (
                   <div 
                     key={index} 
@@ -115,7 +117,7 @@ export default function AboutPageClient({ profileData }) {
                     {/* Timeline dot */}
                     <div className="absolute left-[0.1875rem] md:left-[0.4rem] top-2 w-3 h-3 md:w-4 md:h-4 bg-blue-600 rounded-full border-2 md:border-4 border-gray-50 transform transition-transform duration-300 hover:scale-125"></div>
                     
-                    <div className="flex items-start gap-4 group">
+                    <div className="flex items-start gap-4 group bg-blue-50 p-4 rounded-lg">
                       <div className="hidden md:flex w-10 h-10 bg-blue-100 rounded-lg items-center justify-center flex-shrink-0 transform transition-transform duration-300 group-hover:scale-110">
                         <GraduationCap className="w-5 h-5 text-blue-600" />
                       </div>
@@ -125,8 +127,8 @@ export default function AboutPageClient({ profileData }) {
                             {edu.degree}
                           </h3>
                           {edu.year && (
-                            <span className="inline-flex items-center gap-1.5 text-blue-600 text-sm md:text-base font-medium whitespace-nowrap">
-                              <Clock className="w-4 h-4 flex-shrink-0" style={{ marginTop: '0.05rem' }} />
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-100 text-blue-700 text-sm md:text-base font-medium whitespace-nowrap rounded-full self-start">
+                              <Clock className="w-4 h-4 flex-shrink-0" />
                               <span>{edu.year}</span>
                             </span>
                           )}
@@ -165,7 +167,7 @@ export default function AboutPageClient({ profileData }) {
               {/* Timeline line */}
               <div className="absolute left-[0.5rem] md:left-[0.875rem] top-0 bottom-0 w-0.5 bg-gray-300"></div>
 
-              <div className="space-y-8">
+              <div className="space-y-4">
                 {data.experience.map((exp, index) => (
                   <div 
                     key={index} 
@@ -179,7 +181,7 @@ export default function AboutPageClient({ profileData }) {
                     {/* Timeline dot */}
                     <div className="absolute left-[0.1875rem] md:left-[0.4rem] top-2 w-3 h-3 md:w-4 md:h-4 bg-green-600 rounded-full border-2 md:border-4 border-gray-50 transform transition-transform duration-300 hover:scale-125"></div>
                     
-                    <div className="flex items-start gap-4 group">
+                    <div className="flex items-start gap-4 group bg-green-50 p-4 rounded-lg">
                       <div className="hidden md:flex w-10 h-10 bg-green-100 rounded-lg items-center justify-center flex-shrink-0 transform transition-transform duration-300 group-hover:scale-110">
                         <Briefcase className="w-5 h-5 text-green-600" />
                       </div>
@@ -189,8 +191,8 @@ export default function AboutPageClient({ profileData }) {
                             {exp.position}
                           </h3>
                           {exp.duration && (
-                            <span className="inline-flex items-center gap-1.5 text-green-600 text-sm md:text-base font-medium whitespace-nowrap">
-                              <Clock className="w-4 h-4 flex-shrink-0" style={{ marginTop: '0.05rem' }} />
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 text-sm md:text-base font-medium whitespace-nowrap rounded-full self-start">
+                              <Clock className="w-4 h-4 flex-shrink-0" />
                               <span>{exp.duration}</span>
                             </span>
                           )}
@@ -229,7 +231,7 @@ export default function AboutPageClient({ profileData }) {
               {/* Timeline line */}
               <div className="absolute left-[0.5rem] md:left-[0.875rem] top-0 bottom-0 w-0.5 bg-gray-300"></div>
 
-              <div className="space-y-8">
+              <div className="space-y-4">
                 {data.awards.map((award, index) => (
                   <div 
                     key={index} 
@@ -243,7 +245,7 @@ export default function AboutPageClient({ profileData }) {
                     {/* Timeline dot */}
                     <div className="absolute left-[0.1875rem] md:left-[0.4rem] top-2 w-3 h-3 md:w-4 md:h-4 bg-amber-600 rounded-full border-2 md:border-4 border-gray-50 transform transition-transform duration-300 hover:scale-125"></div>
                     
-                    <div className="flex items-start gap-4 group">
+                    <div className="flex items-start gap-4 group bg-amber-50 p-4 rounded-lg">
                       <div className="hidden md:flex w-10 h-10 bg-amber-100 rounded-lg items-center justify-center flex-shrink-0 transform transition-transform duration-300 group-hover:scale-110">
                         <Award className="w-5 h-5 text-amber-600" />
                       </div>
@@ -253,8 +255,8 @@ export default function AboutPageClient({ profileData }) {
                             {award.title}
                           </h3>
                           {award.year && (
-                            <span className="inline-flex items-center gap-1.5 text-amber-600 text-sm md:text-base font-medium whitespace-nowrap">
-                              <Calendar className="w-4 h-4 flex-shrink-0" style={{ marginTop: '0.05rem' }} />
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-700 text-sm md:text-base font-medium whitespace-nowrap rounded-full self-start">
+                              <Calendar className="w-4 h-4 flex-shrink-0" />
                               <span>{award.year}</span>
                             </span>
                           )}

@@ -48,10 +48,10 @@ Together, this gives a **maintainable** site for a non-developer (CMS) with **ro
 
 1. **Clone the repository** and open the project folder.
 
-2. **Environment variables** — Copy the sample file and fill in real values:
+2. **Environment variables** — Copy the example file and fill in real values:
 
    ```bash
-   cp .env.sample .env
+   cp .env.example .env
    ```
 
    | Variable | Purpose |
@@ -61,7 +61,7 @@ Together, this gives a **maintainable** site for a non-developer (CMS) with **ro
    | `SANITY_API_TOKEN` | Server-only token; needed for **writing** (visitor count updates). Keep it secret. |
    | `RESEND_API_KEY` | API key from Resend for sending contact emails. |
 
-   The contact form sends mail to the **primary email stored in the faculty profile** in Sanity (not a separate env variable). `.env.sample` may list extra keys for your own experiments.
+   The contact form sends mail to the **primary email stored in the faculty profile** in Sanity (not a separate env variable).
 
 3. **Install dependencies** and **run the dev server**:
 

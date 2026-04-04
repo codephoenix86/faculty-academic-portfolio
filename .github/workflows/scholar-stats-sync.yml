@@ -1,0 +1,44 @@
+# Scheduled Google Scholar metrics → Sanity (citations, h-index, i10-index).
+# Secrets (repo Settings → Secrets and variables → Actions):
+#   SANITY_PROJECT_ID, SANITY_DATASET, SANITY_API_TOKEN, SERPAPI_API_KEY
+#   Plus either GOOGLE_SCHOLAR_AUTHOR_ID or SCHOLAR_PROFILE_URL (Google Scholar URL with user=...)
+
+name: Scholar stats sync
+
+on:
+  schedule:
+    # Every 6 hours (UTC)
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: scholar-stats-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/scholar-stats/requirements.txt
+
+      - name: Run sync
+        env:
+          SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }}
+          SANITY_DATASET: ${{ secrets.SANITY_DATASET }}
+          SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}
+          SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
+          GOOGLE_SCHOLAR_AUTHOR_ID: ${{ secrets.GOOGLE_SCHOLAR_AUTHOR_ID }}
+          SCHOLAR_PROFILE_URL: ${{ secrets.SCHOLAR_PROFILE_URL }}
+          SANITY_PROFILE_DOCUMENT_ID: ${{ secrets.SANITY_PROFILE_DOCUMENT_ID }}
+        run: python scripts/scholar-stats/sync.py
